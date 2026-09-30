@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="yotsuba">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 1</title>
+    <link rel="stylesheet" href="/4chan.css">
+    <style>
+        .cross-container {
+            display: grid;
+            grid-template-columns: repeat(3, 300px);
+            grid-template-rows: repeat(5, 200px);
+            justify-content: center;
+            align-items: center;
+            gap: 0px;
+        }
+
+        .cross-container img {
+            width: 820px;
+            height: 200px;
+        }
+
+        .cross-container a:nth-child(1) { grid-column: 2; grid-row: 1; }
+        .cross-container a:nth-child(2) { grid-column: 2; grid-row: 2; }
+        .cross-container a:nth-child(3) { grid-column: 2; grid-row: 3; }
+        .cross-container a:nth-child(4) { grid-column: 1; grid-row: 3; }
+        .cross-container a:nth-child(5) { grid-column: 3; grid-row: 3; }
+        .cross-container a:nth-child(6) { grid-column: 2; grid-row: 4; }
+        .cross-container a:nth-child(7) { grid-column: 2; grid-row: 5; }
+        .cross-container a:nth-child(8) { grid-column: 2; grid-row: 6; }
+        .cross-container a:nth-child(9) { grid-column: 2; grid-row: 7; }
+        .cross-container a:nth-child(10) { grid-column: 2; grid-row: 8; }
+    </style>
+</head>
+<body>
+    <main class="Main">
+        <div class="Page">
+            <section class="Header Header--board">
+                <nav class="Nav">
+                    <ul class="Nav-list">
+                        <li class="Nav-item"><a href="/lib/" class="Nav-link" title="lib">lib</a></li>
+                        <li class="Nav-item"><a href="/1/" class="Nav-link" title="1">1/</a></li>
+                    </ul>
+                    <ul class="Nav-list">
+                        <li class="Nav-item"><a href="/enter/faq/">FAQ</a></li>
+                    </ul>
+                    <ul class="Nav-list">
+                        <li class="Nav-item"><a href="/enter/">Home</a></li>
+                    </ul>
+                </nav>
+                <h1><a href="/1">/1/ - Phase 1</a></h1>
+            </section>
+            <hr>
+            <section class="Thread Thread--full">
+                <!-- Existing content here -->
+                
+                <!-- Insert Cross-Container Gallery Here -->
+                <section class="Post Post--op">
+                    <div class="Post-body">
+                        <div class="cross-container">
+                            <a href="/images/code07.jpg" target="_blank"><img src="/images/code07.jpg" alt="Image 1"></a>
+                            <a href="/images/code26.jpg" target="_blank"><img src="/images/code26.jpg" alt="Image 2"></a>
+                            <a href="/images/code27.jpg" target="_blank"><img src="/images/code27.jpg" alt="Image 3"></a>
+                            <a href="/images/code28.jpg" target="_blank"><img src="/images/code28.jpg" alt="Image 4"></a>
+                            <a href="/images/code33.jpg" target="_blank"><img src="/images/code33.jpg" alt="Image 5"></a>
+                            <a href="/images/code34.png" target="_blank"><img src="/images/code34.png" alt="Image 6"></a>
+                            <a href="/images/code53.png" target="_blank"><img src="/images/code53.png" alt="Image 9"></a>
+                            <a href="/images/code37.jpg" target="_blank"><img src="/images/code37.jpg" alt="Image 7"></a>
+                            <a href="/images/code45.png" target="_blank"><img src="/images/code45.png" alt="Image 8"></a>
+                            <a href="/images/code54.jpg" target="_blank"><img src="/images/code54.jpg" alt="Image 10"></a>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Existing posts here -->
+                <section class="Post Post--reply">
+                    <!-- Content from your existing posts -->
+                </section>
+                
+            </section>
+        </div>
+    </main>
+
+    <script src="/assets/js/main.js?v=1827022981"></script>
+</body>
+</html>

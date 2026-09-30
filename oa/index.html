@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="yotsuba">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objects / Art — net.timeline</title>
+    <link rel="stylesheet" href="/4chan.css">
+    <style>
+        .cross-container {
+            display: grid;
+            grid-template-columns: repeat(3, 240px);
+            grid-template-rows: repeat(5, 240px);
+            justify-content: center;
+            align-items: center;
+            gap: 0;
+            margin: 32px auto 0;
+        }
+
+        .cross-container > * {
+            display: block;
+            width: 240px;
+            height: 240px;
+            overflow: hidden;
+        }
+
+        .cross-container > *:nth-child(1) { grid-column: 2; grid-row: 1; }
+        .cross-container > *:nth-child(2) { grid-column: 2; grid-row: 2; }
+        .cross-container > *:nth-child(3) { grid-column: 2; grid-row: 3; }
+        .cross-container > *:nth-child(4) { grid-column: 1; grid-row: 3; }
+        .cross-container > *:nth-child(5) { grid-column: 3; grid-row: 3; }
+        .cross-container > *:nth-child(6) { grid-column: 2; grid-row: 4; }
+        .cross-container > *:nth-child(7) { grid-column: 2; grid-row: 5; }
+
+        .cross-container img {
+            width: 240px;
+            height: 240px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .oa-placeholder {
+            width: 100%;
+            height: 100%;
+            border: 1px solid rgba(128,128,128,0.18);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: monospace;
+            font-size: 9px;
+            letter-spacing: 0.14em;
+            color: currentColor;
+            opacity: 0.28;
+            background: rgba(128,128,128,0.02);
+            gap: 6px;
+        }
+
+        .oa-placeholder::before {
+            content: '[ ]';
+            font-size: 16px;
+            opacity: 0.5;
+        }
+
+        .oa-quote {
+            text-align: center;
+            margin: 20px auto 4px;
+            font-size: 13px;
+            font-style: italic;
+            max-width: 480px;
+            line-height: 1.65;
+        }
+
+        .oa-source {
+            text-align: center;
+            font-size: 9px;
+            letter-spacing: 0.16em;
+            opacity: 0.4;
+            font-family: monospace;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <main class="Main">
+        <div class="Page">
+
+            <section class="Header Header--board">
+                <nav class="Nav">
+                    <ul class="Nav-list">
+                        <li class="Nav-item"><a href="/lib/" class="Nav-link" title="lib">lib</a></li>
+                        <li class="Nav-item"><a href="/1/" class="Nav-link" title="1">1/</a></li>
+                        <li class="Nav-item"><a href="/oa/" class="Nav-link" title="oa">oa</a></li>
+                    </ul>
+                    <ul class="Nav-list">
+                        <li class="Nav-item"><a href="/enter/faq/">FAQ</a></li>
+                    </ul>
+                    <ul class="Nav-list">
+                        <li class="Nav-item"><a href="/enter/">Home</a></li>
+                    </ul>
+                </nav>
+                <h1><a href="/oa/">/oa/ — Objects / Art</a></h1>
+            </section>
+
+            <hr>
+
+            <section class="Thread Thread--full">
+                <section class="Post Post--op">
+                    <div class="Post-body">
+
+                        <p class="oa-quote">"it stands there as if alive. ask it anything, and it gives the same answer."</p>
+                        <p class="oa-source">Plato, Phaedrus · 275d</p>
+
+                        <div class="cross-container">
+
+                            <!-- top -->
+                            <a href="/images/cyberspace1.gif" target="_blank">
+                                <img src="/images/cyberspace1.gif" alt="">
+                            </a>
+
+                            <!-- slot: add photo — maine stone "lol" -->
+                            <div class="oa-placeholder">maine · lol</div>
+
+                            <!-- center of cross: add photo — maine stone "brb" -->
+                            <div class="oa-placeholder">maine · brb</div>
+
+                            <!-- left arm: add photo — pompeii graffiti -->
+                            <div class="oa-placeholder">pompeii · ~79 ad</div>
+
+                            <!-- right arm: add photo — yoona carved stone -->
+                            <div class="oa-placeholder">yoona</div>
+
+                            <!-- slot: add photo — maine stone "idk" -->
+                            <div class="oa-placeholder">maine · idk</div>
+
+                            <!-- bottom -->
+                            <a href="/images/cyberspace2.gif" target="_blank">
+                                <img src="/images/cyberspace2.gif" alt="">
+                            </a>
+
+                        </div>
+
+                    </div>
+                </section>
+            </section>
+
+        </div>
+    </main>
+
+    <script src="/netTimeline/scripts.js"></script>
+</body>
+</html>
