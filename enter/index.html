@@ -7,6 +7,8 @@
     <title>    welcome
 </title>
 	<link rel="stylesheet" href="/4chan.css">
+    <link rel="stylesheet" href="/enter/gate.css">
+    <script src="/session/session.js" data-portal="index" data-page="gate"></script>
     <style>
         body {
         /* cursor: url('/images/4.ico'), auto !important; */
@@ -91,16 +93,16 @@
                 <a href="/1/" class="Nav-link" title="phase 1">1/</a>
             </li>
             <li class="Nav-item">
-                <a href="/wired/" class="Nav-link" title="eliza" target="_blank">eliza</a>
+                <a href="/wired/" class="Nav-link" title="eliza">eliza</a>
             </li>
             <li class="Nav-item">
-                <a href="/asciiHero/" class="Nav-link" title="ASCII Portal" target="_blank">ascii</a>
+                <a href="/asciiHero/" class="Nav-link" title="ASCII Portal">ascii</a>
             </li>
             <li class="Nav-item">
-                <a href="/surveilled/mirror.html" class="Nav-link" title="Surveilled" target="_blank">surveilled</a>
+                <a href="/surveilled/mirror.html" class="Nav-link" title="Surveilled">surveilled</a>
             </li>
             <li class="Nav-item">
-                <a href="/clickme/game.html" class="Nav-link" title="Nostalgia, Looped" target="_blank">nostalgia</a>
+                <a href="/clickme/game.html" class="Nav-link" title="Nostalgia, Looped">nostalgia</a>
             </li>
 
     </ul>
@@ -128,7 +130,17 @@
 
     
 
-</section>        <section 
+</section>        <section class="Box Box--session" id="sessionBox" hidden>
+		<header class="Box-header">
+			<h2>New session open</h2>
+		</header>
+		<section class="Box-body">
+			<p class="session-welcome">welcome, <b id="sessionName"></b>. you are being remembered.</p>
+			<p class="session-meta" id="sessionMeta"></p>
+			<p>choose a portal below to step inside. every portal has a <b>← portals</b> button in the bottom-right corner that brings you back here.</p>
+			<p>when you are finished, press <b>[ END SESSION ]</b> in the same corner.</p>
+		</section>
+</section>        <section
 	class="Box Box--announcement">
 
 		<header class="Box-header">
@@ -194,7 +206,7 @@
     
     <a 
         class="Thumbnail-link"
-        href="/clickme/game.html" target="_blank">
+        href="/clickme/game.html">
 
                 <h3>Nostalgia, Looped</h3>
         
@@ -211,7 +223,7 @@
 
     <a
         class="Thumbnail-link"
-        href="/surveilled/mirror.html" target="_blank">
+        href="/surveilled/mirror.html">
 
                 <h3>Surveilled</h3>
 
@@ -227,7 +239,7 @@
 
     <a
         class="Thumbnail-link"
-        href="/asciiHero/" target="_blank">
+        href="/asciiHero/">
 
                 <h3>ASCII Portal</h3>
 
@@ -243,7 +255,7 @@
 
     <a
         class="Thumbnail-link"
-        href="/wired/" target="_blank">
+        href="/wired/">
 
                 <h3>eliza</h3>
 
@@ -283,9 +295,7 @@
     </div>
 	</main>
 
-	<script 
-		src="/netTimeline/scripts.js">
-	</script>
+	<script src="/enter/gate.js"></script>
     
 </body>
 </html>

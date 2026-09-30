@@ -48,6 +48,7 @@ function draw() {
 
 function toggleVideo() {
   isVideoPlaying = !isVideoPlaying;
+  if (window.NetSession) NetSession.setCameraActive(isVideoPlaying);
   if (isVideoPlaying) {
     video.play();
     button.html('Exit Portal');

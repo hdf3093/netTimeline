@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="/session/session.js"></script>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,8 +9,6 @@
     <link rel="stylesheet" type="text/css" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Monsieur+La+Doulaise&display=swap" rel="stylesheet">
 
-    <script src="sketch.js"></script>
-    <script type="text/javascript" src="scripts.js"></script>
 
 
 
@@ -154,48 +153,9 @@
                 <h2 style="color: white; text-align: justify;  text-justify: inter-word;                animation-name:glow; animation-duration:1s; animation-iteration-count:infinite; animation-direction:alternate; text-align: center;margin-top: 35px"> elements all over this website are portals to explore __</h2>
                 <h2 style="color: white; text-align: justify;  text-justify: inter-word;                animation-name:glow; animation-duration:1s; animation-iteration-count:infinite; animation-direction:alternate; text-align: center;margin-top: 35px"> __ designed for screens larger than 768px with mouse functionality</h2>
                 <h2 style="color: white; text-align: justify; text-justify: inter-word; animation-name: glow; animation-duration: 1s; animation-iteration-count:infinite; animation-direction: alternate; text-align: center; margin-top: 35px;">
-                    <a href="/enter/" class="enter-link"  style="color:#9aa3ff;" onclick="handleEnterClick(event)">Enter</a>   this allotted space and immerse yourself as you wish
+                    <a href="/enter/" class="enter-link"  style="color:#9aa3ff;">Enter</a>   this allotted space and immerse yourself as you wish
                 </h2>
             </div>
-
-
-
-            
-
-            
-
-       
-       
-
-
-    
-
-
-
-
-
-        
-  
-
-            <script type="text/javascript">
-                document.ready(function() {
-                    (".enter-link").click(function(event) {
-                        event.preventDefault();
-                        console.log("Enter button clicked!");
-            
-                        // Set the animation properties
-                        $(".screenwipe").css({
-                            "width": "0px",
-                            "animation": "wipe 1.25s ease-in-out .1s forwards normal"
-                        });
-            
-                        // Wait for the animation to complete, then navigate to the desired link
-                        setTimeout(function() {
-                            window.location.href = "/enter/";
-                        }, 1500);
-                    });
-                });
-            </script>
             
             
 

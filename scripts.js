@@ -121,7 +121,7 @@ var sound = document.getElementById('clickSound');
 var image = document.getElementById('clickImage');
 var isPlaying = false;
 
-image.addEventListener('click', function() {
+if (image) image.addEventListener('click', function() {
   if (isPlaying) {
     sound.pause();
     isPlaying = false;
@@ -193,6 +193,8 @@ document.addEventListener('DOMContentLoaded', function () {
   var cyberwarImage = document.getElementById('cyberwar');
   var replaceImage = document.getElementById('cyberwar2');
 
+  if (!prayforImage || !hideImage || !cyberwarImage || !replaceImage) return;
+
   var isHidden = true;
   var isCyberwarHidden = true;
 
@@ -230,6 +232,8 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', function () {
   var loveGif1 = document.getElementById('loveGif1');
   var loveGif2 = document.getElementById('loveGif2');
+
+  if (!loveGif1 || !loveGif2) return;
 
   var loveGifs = [loveGif1, loveGif2];
   var currentLoveGifIndex = 0;
@@ -311,3 +315,25 @@ var FilePreview = class extends HTMLElement {
   }
 };
 
+// Intro wipe, then the Enter link wipes out before navigating.
+document.addEventListener('DOMContentLoaded', function () {
+  var wipe = document.querySelector('.screenwipe');
+  if (!wipe) return;
+
+  setTimeout(function () {
+    wipe.style.animation = 'none';
+    wipe.style.display = 'none';
+  }, 2700);
+
+  document.querySelectorAll('.enter-link').forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      wipe.style.display = 'block';
+      wipe.style.width = '0px';
+      wipe.style.animation = 'wipe 1.25s ease-in-out .1s forwards normal';
+      setTimeout(function () {
+        window.location.href = link.getAttribute('href');
+      }, 1500);
+    });
+  });
+});

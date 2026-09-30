@@ -97,6 +97,7 @@ function drawFace(positions, x, y, w, h) {
 
 function toggleWebcam() {
   webcamOn = !webcamOn;
+  if (window.NetSession) NetSession.setCameraActive(webcamOn);
 
   openMirrorButton.html(webcamOn ? 'goodbye' : 'hello');
 

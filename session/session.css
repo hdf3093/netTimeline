@@ -1,0 +1,133 @@
+/* Session chrome: styled as system UI, not artwork. */
+
+.nt-chrome {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  z-index: 2147483000;
+  display: flex;
+  gap: 6px;
+  font: 12px/1 'Courier New', Courier, monospace;
+}
+
+.nt-chrome-btn {
+  font: inherit;
+  letter-spacing: 0.04em;
+  color: #111;
+  background: #d4d0c8;
+  border: 1px solid;
+  border-color: #fff #404040 #404040 #fff;
+  box-shadow: inset -1px -1px #808080, inset 1px 1px #dfdfdf;
+  padding: 6px 9px;
+  cursor: pointer;
+  text-decoration: none;
+  opacity: 0.55;
+  transition: opacity 0.15s;
+}
+
+.nt-chrome-back { opacity: 0.8; }
+
+.nt-chrome-btn:hover,
+.nt-chrome-btn:focus-visible { opacity: 1; }
+
+.nt-chrome-btn:active:not(:disabled) {
+  border-color: #404040 #fff #fff #404040;
+  box-shadow: inset 1px 1px #808080;
+}
+
+.nt-chrome-btn:disabled {
+  cursor: default;
+  color: #808080;
+  opacity: 0.8;
+}
+
+/* ---------- dialog ---------- */
+
+.nt-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.25);
+  cursor: default;
+}
+
+.nt-dialog {
+  width: min(420px, calc(100vw - 32px));
+  background: #d4d0c8;
+  border: 1px solid;
+  border-color: #fff #404040 #404040 #fff;
+  box-shadow: inset -1px -1px #808080, inset 1px 1px #dfdfdf, 4px 4px 0 rgba(0, 0, 0, 0.35);
+  padding: 3px;
+  font: 13px/1.4 Tahoma, Verdana, 'Segoe UI', sans-serif;
+  color: #000;
+  text-align: left;
+}
+
+.nt-dialog-titlebar {
+  background: linear-gradient(90deg, #0a246a, #a6caf0);
+  color: #fff;
+  font-weight: bold;
+  padding: 3px 6px;
+  font-size: 12px;
+}
+
+.nt-dialog-content {
+  display: flex;
+  gap: 14px;
+  padding: 16px 14px 8px;
+}
+
+.nt-dialog-icon {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #f5d000;
+  border: 1px solid #806c00;
+  font: bold 20px/30px Tahoma, sans-serif;
+  text-align: center;
+}
+
+.nt-dialog-title { margin: 0 0 6px; font-weight: bold; }
+.nt-dialog-body { margin: 0; }
+
+.nt-dialog-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 12px 10px;
+}
+
+.nt-dialog-btn {
+  font: 12px 'Courier New', Courier, monospace;
+  min-width: 120px;
+  padding: 5px 8px;
+  background: #d4d0c8;
+  color: #000;
+  border: 1px solid;
+  border-color: #fff #404040 #404040 #fff;
+  box-shadow: inset -1px -1px #808080, inset 1px 1px #dfdfdf;
+  cursor: pointer;
+}
+
+.nt-dialog-btn:focus { outline: 1px dotted #000; outline-offset: -5px; }
+.nt-dialog-btn:disabled { color: #808080; cursor: default; }
+
+/* ---------- loading sequence ---------- */
+
+.nt-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  background: #000;
+  color: #c8c8c8;
+  font: 22px/1.6 'Courier New', Courier, monospace;
+  padding: 12vh 10vw;
+  box-sizing: border-box;
+  cursor: none;
+}
+
+.nt-loading p { margin: 0; white-space: pre; }

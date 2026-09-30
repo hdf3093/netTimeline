@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Index of /cache/</title>
+  <script src="/session/session.js" data-page="cache"></script>
+  <style>
+    html, body { margin: 0; background: #fff; color: #000; }
+    body {
+      font: clamp(16px, 1.9vw, 28px)/1.45 'Courier New', Courier, monospace;
+      padding: 6vh 7vw 12vh;
+      cursor: default;
+    }
+    h1 {
+      font: bold 1.35em/1.2 'Times New Roman', Times, serif;
+      margin: 0 0 0.6em;
+    }
+    hr { border: 0; border-top: 1px solid #000; margin: 0.8em 0; }
+    #record { margin: 0; white-space: pre-wrap; word-break: break-word; }
+    #record .line { opacity: 0; }
+    #record .line.shown { opacity: 1; }
+    .dim { color: #777; }
+  </style>
+</head>
+<body>
+  <h1 id="heading">Index of /cache/</h1>
+  <hr>
+  <pre id="record"></pre>
+  <hr>
+
+  <script>
+    (function () {
+      var NS = window.NetSession;
+      var s = NS && NS.get();
+      var id = new URLSearchParams(location.search).get('id');
+      var record = document.getElementById('record');
+      var CONFIG = NS ? NS.config : { resetMs: 60000, resetOnInputAfterMs: 30000 };
+
+      var NAMES = {
+        eliza: 'eliza', ascii: 'ascii', surveilled: 'surveilled',
+        nostalgia: 'nostalgia', lib: 'lib', phase1: '1', oa: 'oa'
+      };
+      function portalName(pid) { return NAMES[pid] || pid; }
+
+      function pad(n) { return String(n).padStart(2, '0'); }
+      function stamp(iso) {
+        var d = new Date(iso);
+        return pad(d.getMonth() + 1) + '.' + pad(d.getDate()) + '.' + d.getFullYear() +
+          ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+      }
+      function hms(ms) {
+        var t = Math.round(ms / 1000);
+        return pad(Math.floor(t / 3600)) + ':' + pad(Math.floor(t / 60) % 60) + ':' + pad(t % 60);
+      }
+      function ms2(ms) {
+        var t = Math.round(ms / 1000);
+        return pad(Math.floor(t / 60)) + ':' + pad(t % 60);
+      }
+      function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
+      function row(label, value) { return (label + ' ').padEnd(14, ' ') + value; }
+
+      // No record for this visitor: it was already cleared for the next one.
+      if (!s || !s.ended_at || s.session_id !== id) {
+        record.textContent = 'This record is no longer available here.';
+        setTimeout(function () { location.replace('/enter/'); }, 5000);
+        return;
+      }
+
+      var sum = NS.summary();
+      var d = new Date(s.started_at);
+      var sessionName = 'session_' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + '-' + d.getFullYear() +
+        '_' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds());
+      var upper = s.name.toUpperCase();
+
+      document.title = 'Index of /cache/' + upper + '/';
+      document.getElementById('heading').textContent = 'Index of /cache/' + upper + '/';
+
+      var lines = [
+        sessionName,
+        '',
+        row('SUBJECT:', s.name),
+        row('FIRST SEEN:', stamp(s.started_at)),
+        row('LAST SEEN:', stamp(s.ended_at)),
+        row('DURATION:', hms(sum.durationMs)),
+        '',
+        row('/portals/', sum.portalsVisited + ' visited'),
+        row('/revisits/', sum.revisit ? portalName(sum.revisit.id) + ' (' + sum.revisit.count + ' times)' : 'none'),
+        row('/longest/', sum.longest ? portalName(sum.longest.id) + ' — ' + ms2(sum.longest.ms) : '—'),
+        row('/clicks/', s.clicks.toLocaleString()),
+        row('/movement/', s.mouse_px.toLocaleString() + ' px'),
+        row('/camera/', s.camera === 'granted' ? 'seen' : s.camera === 'denied' ? 'refused' : 'not asked'),
+        row('/consent/', s.terms),
+        row('/guestbook/', s.guestbook ? '1 entry' : 'nothing left behind'),
+        ''
+      ];
+
+      if (sum.hesitationMs >= 5000) {
+        lines.push('YOU SPENT ' + plural(Math.round(sum.hesitationMs / 1000), 'SECOND', 'SECONDS') +
+          ' DECIDING WHERE TO GO NEXT.');
+      }
+      if (s.cancels > 0) {
+        lines.push('YOU CONSIDERED LEAVING ' + plural(s.cancels, 'TIME', 'TIMES') + '.');
+      }
+      if (sum.hesitationMs >= 5000 || s.cancels > 0) lines.push('');
+
+      lines.push(sum.interactions.toLocaleString() + ' interactions recorded.', '');
+      if (s.ended_by === 'idle') lines.push('Your session was ended for you.', '');
+      lines.push('Thank you, ' + s.name + '.', '', 'You may leave now.');
+
+      // Lines arrive one at a time, like a listing being written.
+      lines.forEach(function (text, i) {
+        var span = document.createElement('span');
+        span.className = 'line';
+        span.textContent = text + '\n';
+        record.appendChild(span);
+        setTimeout(function () { span.classList.add('shown'); }, 400 + i * 160);
+      });
+
+      // Kiosk hand-off to the next visitor.
+      var shownAt = Date.now();
+      setTimeout(NS.reset, CONFIG.resetMs);
+      ['pointerdown', 'keydown', 'touchstart'].forEach(function (type) {
+        document.addEventListener(type, function () {
+          if (Date.now() - shownAt > CONFIG.resetOnInputAfterMs) NS.reset();
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

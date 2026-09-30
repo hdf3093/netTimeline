@@ -1,0 +1,164 @@
+/* Gate shown on /enter/ before a session exists. */
+
+html.nt-gate .Main { display: none; }
+html:not(.nt-gate) .gate { display: none; }
+
+.gate {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.gate-panel {
+  display: block;
+  width: min(460px, 100%);
+  background: var(--field-color-2);
+  border: 1px solid var(--border-color-1);
+  padding: 28px 28px 24px;
+  box-sizing: border-box;
+  font-family: arial, helvetica, sans-serif;
+  color: #000;
+}
+
+.gate-title {
+  font: bold 1.9rem/1.2 tahoma, arial, sans-serif;
+  color: var(--text-color-1);
+  margin: 0 0 6px;
+}
+
+.gate-sub {
+  margin: 0 0 24px;
+  font-size: 1.05rem;
+  color: var(--text-color-2);
+}
+
+.gate-label {
+  display: block;
+  font-weight: bold;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+}
+
+.gate-input {
+  width: 100%;
+  box-sizing: border-box;
+  font: 1.1rem 'Courier New', Courier, monospace;
+  padding: 6px 8px;
+  border: 1px solid #aaa;
+  background: #fff;
+}
+
+.gate-input:focus { outline: 2px solid var(--text-color-4); outline-offset: 0; }
+
+.gate-error {
+  min-height: 1.2em;
+  margin: 4px 0 10px;
+  font-size: 0.85rem;
+  color: #d00;
+}
+
+.gate-check {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.gate-check a { color: var(--text-color-4); }
+
+.gate-enter {
+  font: bold 1rem 'Courier New', Courier, monospace;
+  padding: 8px 18px;
+  background: var(--field-color-1);
+  border: 1px solid var(--text-color-1);
+  color: var(--text-color-1);
+  cursor: pointer;
+}
+
+.gate-enter:hover, .gate-enter:focus-visible { background: var(--text-color-1); color: var(--bg-color-2); }
+
+/* ---------- Terms window (early-2000s) ---------- */
+
+.terms-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 16px;
+}
+
+.terms-backdrop[hidden] { display: none; }
+
+.terms-window {
+  width: min(560px, 100%);
+  background: #d4d0c8;
+  border: 1px solid;
+  border-color: #fff #404040 #404040 #fff;
+  box-shadow: inset -1px -1px #808080, inset 1px 1px #dfdfdf, 4px 4px 0 rgba(0, 0, 0, 0.35);
+  padding: 3px;
+  font-family: Tahoma, Verdana, sans-serif;
+}
+
+.terms-titlebar {
+  background: linear-gradient(90deg, #0a246a, #a6caf0);
+  color: #fff;
+  font-weight: bold;
+  font-size: 12px;
+  padding: 3px 6px;
+}
+
+.terms-text {
+  margin: 8px;
+  height: min(46vh, 340px);
+  overflow-y: scroll;
+  background: #fff;
+  border: 1px solid;
+  border-color: #808080 #fff #fff #808080;
+  padding: 8px 10px;
+  font: 9px/1.35 Verdana, Tahoma, sans-serif;
+  color: #222;
+}
+
+.terms-text h2 { font-size: 11px; margin: 0 0 2px; }
+.terms-text p { margin: 0 0 7px; }
+.terms-text .terms-updated { font-style: italic; }
+.terms-text .terms-heading { font-weight: bold; margin: 9px 0 2px; }
+
+.terms-buttons, .terms-refusal {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 8px;
+}
+
+.terms-refusal { justify-content: space-between; font-size: 13px; }
+.terms-refusal p { margin: 0; font-weight: bold; }
+.terms-buttons[hidden], .terms-refusal[hidden] { display: none; }
+
+.terms-window button {
+  font: 12px 'Courier New', Courier, monospace;
+  padding: 5px 10px;
+  background: #d4d0c8;
+  color: #000;
+  border: 1px solid;
+  border-color: #fff #404040 #404040 #fff;
+  box-shadow: inset -1px -1px #808080, inset 1px 1px #dfdfdf;
+  cursor: pointer;
+}
+
+.terms-window button:focus { outline: 1px dotted #000; outline-offset: -4px; }
+
+/* ---------- session box on the board ---------- */
+
+.Box--session .Box-body p { margin: 0 0 0.5rem; }
+.Box--session .session-welcome { font-size: 1.15rem; }
+.Box--session .session-meta { font-family: 'Courier New', Courier, monospace; color: var(--text-color-5); }
