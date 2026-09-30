@@ -71,6 +71,15 @@ html:not(.nt-gate) .gate { display: none; }
 
 .gate-check a { color: var(--text-color-4); }
 
+.gate-refused {
+  margin: -12px 0 20px 22px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: var(--text-color-1);
+}
+
+.gate-refused[hidden] { display: none; }
+
 .gate-enter {
   font: bold 1rem 'Courier New', Courier, monospace;
   padding: 8px 18px;

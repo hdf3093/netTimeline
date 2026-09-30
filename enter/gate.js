@@ -58,6 +58,7 @@
       '<p class="gate-error" id="gateError" role="alert"></p>' +
       '<label class="gate-check"><input type="checkbox" id="gateAgree"> ' +
         '<span>I have read and agree to the <a href="#terms" id="gateTermsLink">Terms of Existence</a></span></label>' +
+      '<p class="gate-refused" id="gateRefused" hidden>Your refusal has been recorded.</p>' +
       '<button class="gate-enter" type="submit">[ ENTER ]</button>' +
     '</form>' +
     '<div class="terms-backdrop" id="terms" hidden>' +
@@ -83,6 +84,7 @@
   var modal = gate.querySelector('#terms');
   var buttons = gate.querySelector('#termsButtons');
   var refusal = gate.querySelector('#termsRefusal');
+  var refused = gate.querySelector('#gateRefused');
   var enterAfterTerms = false;
 
   var text = gate.querySelector('#termsText');
@@ -138,6 +140,7 @@
   // Ticking the box without opening the Terms counts as agreeing to them.
   agree.addEventListener('change', function () {
     terms = agree.checked ? 'accepted' : null;
+    refused.hidden = true;
   });
 
   gate.querySelector('#gateTermsLink').addEventListener('click', function (e) {
@@ -150,6 +153,7 @@
     if (!choice) return;
     terms = choice;
     agree.checked = choice === 'accepted';
+    refused.hidden = choice !== 'declined';
     if (choice === 'declined') {
       buttons.hidden = true;
       refusal.hidden = false;
@@ -160,10 +164,10 @@
     if (enterAfterTerms) enter();
   });
 
-  // Declining still lets the visitor in.
+  // Declining still lets the visitor in, but only once they choose to enter.
   gate.querySelector('#termsContinue').addEventListener('click', function () {
     closeTerms();
-    if (cleanName()) enter();
+    if (cleanName()) gate.querySelector('.gate-enter').focus();
     else nameInput.focus();
   });
 
