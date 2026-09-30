@@ -21,6 +21,18 @@
     #record .line { opacity: 0; }
     #record .line.shown { opacity: 1; }
     .dim { color: #777; }
+    #next { display: flex; align-items: baseline; gap: 1.2em; flex-wrap: wrap; margin-top: 0.4em; }
+    #next[hidden] { display: none; }
+    #newSession {
+      font: inherit;
+      color: #000;
+      background: #fff;
+      border: 2px solid #000;
+      padding: 0.35em 0.8em;
+      cursor: pointer;
+    }
+    #newSession:hover, #newSession:focus-visible { background: #000; color: #fff; outline: none; }
+    #countdown { font-size: 0.75em; }
   </style>
 </head>
 <body>
@@ -28,6 +40,10 @@
   <hr>
   <pre id="record"></pre>
   <hr>
+  <div id="next" hidden>
+    <button type="button" id="newSession">[ START A NEW SESSION ]</button>
+    <span class="dim" id="countdown"></span>
+  </div>
 
   <script>
     (function () {
@@ -35,7 +51,7 @@
       var s = NS && NS.get();
       var id = new URLSearchParams(location.search).get('id');
       var record = document.getElementById('record');
-      var CONFIG = NS ? NS.config : { resetMs: 60000, resetOnInputAfterMs: 30000 };
+      var CONFIG = NS ? NS.config : { resetMs: 60000 };
 
       var NAMES = {
         eliza: 'eliza', ascii: 'ascii', surveilled: 'surveilled',
@@ -117,14 +133,18 @@
         setTimeout(function () { span.classList.add('shown'); }, 400 + i * 160);
       });
 
-      // Kiosk hand-off to the next visitor.
-      var shownAt = Date.now();
-      setTimeout(NS.reset, CONFIG.resetMs);
-      ['pointerdown', 'keydown', 'touchstart'].forEach(function (type) {
-        document.addEventListener(type, function () {
-          if (Date.now() - shownAt > CONFIG.resetOnInputAfterMs) NS.reset();
-        });
-      });
+      // Kiosk hand-off: the next visitor can start right away, or the station resets itself.
+      var next = document.getElementById('next');
+      var countdown = document.getElementById('countdown');
+      var resetAt = Date.now() + CONFIG.resetMs;
+      document.getElementById('newSession').addEventListener('click', NS.reset);
+      setTimeout(function () { next.hidden = false; }, 400 + lines.length * 160 + 600);
+      (function tickDown() {
+        var left = Math.max(0, Math.ceil((resetAt - Date.now()) / 1000));
+        countdown.textContent = 'this terminal resets in ' + left + 's';
+        if (left === 0) NS.reset();
+        else setTimeout(tickDown, 250);
+      })();
     })();
   </script>
 </body>

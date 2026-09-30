@@ -20,7 +20,6 @@
     idleMs: 90 * 1000,          // no input → session ends for the visitor
     idleExtendedMs: 5 * 60 * 1000, // ceiling while a camera is on or an embed has focus
     resetMs: 60 * 1000,         // cache page → back to /enter/ for the next visitor
-    resetOnInputAfterMs: 30 * 1000, // after this long on the cache, any input resets
     exhibitionId: 'our-images-under-imperialism-2026'
   };
   try {
