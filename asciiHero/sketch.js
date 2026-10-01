@@ -22,8 +22,7 @@ const STATUS = [
   'brightness → meaning',
   'resolution lowered for your comfort',
   '{name}, do you look like you?',
-  'this is what a camera sees',
-  'you will be seen, you will not be kept.'
+  'this is what a camera sees'
 ];
 
 let video = null;
