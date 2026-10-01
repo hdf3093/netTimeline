@@ -302,7 +302,8 @@ const STEPS = [
   {
     title: 'camera',
     text: 'can you see me?',
-    note: 'net.timeline would like to use your camera. you will be seen, you will not be kept.',
+    receive: ['Your face', 'Your expressions', 'How close you are', 'Where you are looking'],
+    note: 'you will be seen, you will not be kept.',
     buttons: [{ label: 'hello', start: true, primary: true }]
   }
 ];
@@ -321,31 +322,50 @@ function resetPopups() {
   showStep(0);
 }
 
+// Styled after the 2012-era app permission dialog.
 function showStep(n) {
   step = n;
   const s = STEPS[n];
   const box = document.getElementById('popups');
   box.innerHTML = '';
-  const card = document.createElement('div');
-  card.className = 'consent';
-  card.innerHTML =
-    '<p class="consent-step"></p>' +
-    '<p class="consent-text"></p>' +
-    '<div class="consent-buttons"></div>' +
-    '<p class="consent-note"></p>';
-  card.querySelector('.consent-step').textContent = (n + 1) + ' of ' + STEPS.length;
-  card.querySelector('.consent-text').textContent = s.text;
-  card.querySelector('.consent-note').textContent = s.note || '';
-  const row = card.querySelector('.consent-buttons');
+  const dlg = document.createElement('div');
+  dlg.className = 'perm';
+  dlg.innerHTML =
+    '<div class="perm-inner">' +
+      '<div class="perm-title">Request for Permission</div>' +
+      '<div class="perm-body">' +
+        '<div class="perm-app"><span class="perm-icon" aria-hidden="true">n.t</span>' +
+          '<span><a class="perm-name">net.timeline</a> <span class="perm-asks"></span></span></div>' +
+        '<p class="perm-question"></p>' +
+      '</div>' +
+      '<div class="perm-footer"><span class="perm-note"></span><span class="perm-buttons"></span></div>' +
+    '</div>';
+  dlg.querySelector('.perm-asks').textContent = s.receive ? 'is requesting permission to:' : 'would like to know:';
+  dlg.querySelector('.perm-question').textContent = s.text;
+  dlg.querySelector('.perm-note').textContent = s.note || '';
+
+  if (s.receive) {
+    const list = document.createElement('div');
+    list.className = 'perm-receive';
+    list.innerHTML = '<p class="perm-receive-head">THIS APP WILL RECEIVE:</p><ul></ul>';
+    s.receive.forEach((item) => {
+      const li = document.createElement('li');
+      li.textContent = item;
+      list.querySelector('ul').appendChild(li);
+    });
+    dlg.querySelector('.perm-body').insertBefore(list, dlg.querySelector('.perm-question'));
+  }
+
+  const row = dlg.querySelector('.perm-buttons');
   s.buttons.forEach((b) => {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = b.primary ? 'consent-btn consent-btn--primary' : 'consent-btn';
+    btn.className = b.primary ? 'perm-btn perm-btn--blue' : 'perm-btn';
     btn.textContent = b.label;
-    btn.addEventListener('click', () => choose(b, card));
+    btn.addEventListener('click', () => choose(b, dlg));
     row.appendChild(btn);
   });
-  box.appendChild(card);
+  box.appendChild(dlg);
   row.querySelector('button').focus({ preventScroll: true });
 }
 
