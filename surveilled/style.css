@@ -95,14 +95,13 @@ canvas {
 }
 
 .perm-receive li::before {
-  content: '';
+  content: '•';
   position: absolute;
-  left: 4px;
-  top: 6px;
-  width: 10px;
-  height: 10px;
-  background: #d8dfea;
-  border: 1px solid #b4bbcd;
+  left: 8px;
+  top: 3px;
+  color: #3b5998;
+  font-size: 13px;
+  line-height: 1;
 }
 
 .perm-footer {

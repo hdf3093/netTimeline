@@ -15,6 +15,8 @@ let tile = 120, cols = 0, rows = 0, panel = {};
 let concern = null;
 let extracted = 0;
 let profile = null;
+let watchingSince = 0;
+let lookingSince = null;
 let sndCode, sndCamera, sndNoise;
 
 function preload() {
@@ -56,6 +58,8 @@ function layout() {
 
 function startWatching() {
   watching = true;
+  watchingSince = millis();
+  lookingSince = null;
   cameraDenied = false;
   document.getElementById('popups').hidden = true;
   document.getElementById('hud').hidden = false;
@@ -190,6 +194,17 @@ function readout(pos) {
   const mouthW = d(44, 50), mouthH = d(47, 53);
   const expression = mouthH / mouthW > 0.38 ? 'speaking' : mouthW / faceW > 0.42 ? 'smiling' : 'neutral';
 
+  // Attention: is the nose centred between the eyes (facing the screen)?
+  const eyeMidX = (pos[27][0] + pos[32][0]) / 2;
+  const yaw = (pos[62][0] - eyeMidX) / Math.max(1, d(27, 32));
+  const onScreen = Math.abs(yaw) < 0.25;
+  if (onScreen && lookingSince === null) lookingSince = millis();
+  if (!onScreen) lookingSince = null;
+  const attention = onScreen ? 'on screen (' + ((millis() - lookingSince) / 1000).toFixed(1) + 's)' : 'looking away';
+
+  const dwell = Math.floor((millis() - watchingSince) / 1000);
+  const dwellText = String(Math.floor(dwell / 60)).padStart(2, '0') + ':' + String(dwell % 60).padStart(2, '0');
+
   // A "faceprint" from the landmark geometry: it changes as you move.
   let h = 2166136261;
   for (let i = 0; i < pos.length; i += 3) {
@@ -213,11 +228,17 @@ function readout(pos) {
     ['head tilt', (tilt >= 0 ? '+' : '−') + Math.abs(tilt).toFixed(1) + '°'],
     ['distance', '~' + Math.round(4200 / faceW) + ' cm'],
     ['expression', expression],
+    ['attention', attention],
+    ['dwell time', dwellText],
     ['age_est', profile.age + ' (' + (0.55 + noise(millis() / 3000) * 0.4).toFixed(2) + ')'],
     ['ad_segment', profile.segment],
+    ['insecurity', (0.4 + noise(millis() / 4000 + 3) * 0.5).toFixed(2)],
     ['est_value', '$' + (0.003 + noise(millis() / 5000 + 9) * 0.003).toFixed(4) + ' / impression'],
+    ['likely to', 'return'],
     ['consent', 'assumed'],
-    ['concern', concern || '—']
+    ['concern', concern || '—'],
+    ['shared with', '0 partners (here)'],
+    ['retention', 'until you look away']
   ];
 }
 
@@ -302,8 +323,7 @@ const STEPS = [
   {
     title: 'camera',
     text: 'can you see me?',
-    receive: ['Your face', 'Your expressions', 'How close you are', 'Where you are looking'],
-    note: 'you will be seen, you will not be kept.',
+    receive: ['Your face', 'Your expressions', 'How close you are', 'Where you are looking', 'How long you stay'],
     buttons: [{ label: 'hello', start: true, primary: true }]
   }
 ];
