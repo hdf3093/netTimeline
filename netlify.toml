@@ -1,0 +1,4 @@
+# net.timeline is a static site plus one function (the archive).
+[build]
+  publish = "."
+  functions = "netlify/functions"

@@ -4,7 +4,7 @@
  *   <script src="/session/session.js" data-portal="nostalgia"></script>
  *
  *   data-portal  id of the portal this page is (omit for non-portal pages)
- *   data-page    "gate" on /enter/, "cache" on /cache/
+ *   data-page    "gate" on /enter/, "cache" on /cache/, "archive" on /archive/
  *
  * Detailed session data lives in sessionStorage only. When a session ends, a
  * minimal summary is queued in localStorage for the (future) archive backend.
@@ -20,7 +20,8 @@
     idleMs: 90 * 1000,          // no input → session ends for the visitor
     idleExtendedMs: 5 * 60 * 1000, // ceiling while a camera is on or an embed has focus
     resetMs: 60 * 1000,         // cache page → back to /enter/ for the next visitor
-    exhibitionId: 'our-images-under-imperialism-2026'
+    exhibitionId: 'our-images-under-imperialism-2026',
+    archiveUrl: '/api/archive'
   };
   try {
     var override = JSON.parse(localStorage.getItem('nt.config') || 'null');
@@ -41,6 +42,7 @@
   var ending = false;
   var cameraActive = false;
   var lastInput = Date.now();
+  var flushing = false;
 
   /* ---------- storage ---------- */
 
@@ -66,7 +68,7 @@
 
   /* ---------- guards (run before the page paints) ---------- */
 
-  if (s && s.ended_at && page !== 'cache') {
+  if (s && s.ended_at && page !== 'cache' && page !== 'archive') {
     location.replace(cacheUrl(s.session_id));
     return;
   }
@@ -96,6 +98,7 @@
     end: end,
     reset: reset,
     summary: function () { return summarize(s); },
+    pending: function () { return readQueue().length; },
     setCameraActive: function (on) { cameraActive = !!on; lastInput = Date.now(); }
   };
 
@@ -108,9 +111,15 @@
     }
   }, true);
 
+  /* ---------- archive sync (every page, so a later visit retries) ---------- */
+
+  flushQueue();
+  window.addEventListener('online', flushQueue);
+  setInterval(flushQueue, 60 * 1000);
+
   if (!s || s.ended_at) {
     if (page === 'gate') document.documentElement.classList.add('nt-gate');
-    if (page === 'cache') onReady(installEndedChrome);
+    if ((page === 'cache' || page === 'archive') && s) onReady(installEndedChrome);
     return;
   }
 
@@ -348,7 +357,8 @@
     showLoading(function () { location.replace(cacheUrl(s.session_id)); });
   }
 
-  // Only the fields the Terms disclose are kept. Synced by the archive backend (Phase 3).
+  // Only the fields the Terms disclose are kept. Written to the laptop first,
+  // then sent to the archive; it leaves the queue only once the server confirms.
   function queueArchive(session) {
     var sum = summarize(session);
     var record = {
@@ -368,6 +378,35 @@
       queue.push(record);
       localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
     } catch (e) {}
+    flushQueue();
+  }
+
+  function readQueue() {
+    try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); }
+    catch (e) { return []; }
+  }
+
+  function flushQueue() {
+    var queue = readQueue();
+    if (flushing || !queue.length || !window.fetch) return;
+    flushing = true;
+    var record = queue[0];
+    fetch(CONFIG.archiveUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(record),
+      keepalive: true
+    }).then(function (res) {
+      flushing = false;
+      // 422 means the server will never accept it; don't let it block the rest.
+      if (!res.ok && res.status !== 422) return;
+      try {
+        localStorage.setItem(QUEUE_KEY, JSON.stringify(readQueue().filter(function (r) {
+          return r.session_id !== record.session_id;
+        })));
+      } catch (e) {}
+      flushQueue();
+    }, function () { flushing = false; });
   }
 
   function showLoading(done) {

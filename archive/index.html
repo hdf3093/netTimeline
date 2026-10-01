@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Index of /archive/</title>
+  <script src="/session/session.js" data-page="archive"></script>
+  <style>
+    html, body { margin: 0; background: #fff; color: #000; }
+    body {
+      font: clamp(14px, 1.4vw, 20px)/1.45 'Courier New', Courier, monospace;
+      padding: 6vh 7vw 14vh;
+      cursor: default;
+    }
+    h1 { font: bold 1.7em/1.2 'Times New Roman', Times, serif; margin: 0 0 0.3em; }
+    hr { border: 0; border-top: 1px solid #000; margin: 0.8em 0; }
+    .dim { color: #777; }
+    #status { margin: 0; }
+
+    #visitors {
+      list-style: none;
+      margin: 1.2em 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(15em, 1fr));
+      gap: 1.6em 2em;
+    }
+    #visitors li { opacity: 0; animation: appear 0.4s ease-out forwards; }
+    #visitors li.you { outline: 2px solid #000; outline-offset: 0.5em; }
+    .v-name { font-weight: bold; font-size: 1.25em; letter-spacing: 0.04em; }
+    .v-line { display: block; }
+    @keyframes appear { to { opacity: 1; } }
+
+    .pager, .next { display: flex; gap: 1em; flex-wrap: wrap; align-items: baseline; margin-top: 0.6em; }
+    .pager[hidden], .next[hidden] { display: none; }
+    button {
+      font: inherit;
+      color: #000;
+      background: #fff;
+      border: 2px solid #000;
+      padding: 0.3em 0.8em;
+      cursor: pointer;
+    }
+    button:hover, button:focus-visible { background: #000; color: #fff; outline: none; }
+    button:disabled { opacity: 0.3; cursor: default; background: #fff; color: #000; }
+    #countdown { font-size: 0.75em; }
+  </style>
+</head>
+<body>
+  <h1>Index of /archive/</h1>
+  <p id="status" class="dim">reading the archive…</p>
+  <hr>
+  <ul id="visitors"></ul>
+  <div class="pager" id="pager" hidden>
+    <button type="button" id="newer">[ ← newer ]</button>
+    <button type="button" id="older">[ older → ]</button>
+    <span class="dim" id="pageInfo"></span>
+  </div>
+  <hr>
+  <div class="next" id="next" hidden>
+    <button type="button" id="back">[ BACK TO YOUR CACHE ]</button>
+    <button type="button" id="newSession">[ START A NEW SESSION ]</button>
+    <span class="dim" id="countdown"></span>
+  </div>
+
+  <script>
+    (function () {
+      var NS = window.NetSession;
+      var s = NS && NS.get();
+      var me = s && s.ended_at ? s : null;
+      var list = document.getElementById('visitors');
+      var status = document.getElementById('status');
+      var page = 0;
+      var youEl = null;
+
+      function pad(n) { return String(n).padStart(2, '0'); }
+      function date(iso) {
+        var d = new Date(iso);
+        return pad(d.getMonth() + 1) + '.' + pad(d.getDate()) + '.' + String(d.getFullYear()).slice(2);
+      }
+      function stay(sec) { return Math.floor(sec / 60) + 'm ' + pad(sec % 60) + 's'; }
+      function agoText(iso) {
+        var t = Math.max(0, Math.round((Date.now() - Date.parse(iso)) / 1000));
+        if (t < 60) return t + (t === 1 ? ' second' : ' seconds') + ' ago';
+        var m = Math.floor(t / 60);
+        return m + (m === 1 ? ' minute' : ' minutes') + ' ago';
+      }
+      function leftText(v) {
+        if (v.left_something) return 'left something behind';
+        if (v.ended_by === 'idle') return 'left without saying goodbye';
+        return 'left nothing behind';
+      }
+
+      // The current visitor, from this laptop, in case the archive hasn't caught up yet.
+      function localTrace() {
+        return {
+          session_id: me.session_id,
+          name: me.name.trim().split(/\s+/)[0].slice(0, 16),
+          started_at: me.started_at,
+          ended_at: me.ended_at,
+          duration_s: Math.round((Date.parse(me.ended_at) - Date.parse(me.started_at)) / 1000),
+          left_something: !!me.guestbook,
+          ended_by: me.ended_by
+        };
+      }
+
+      function render(visitors) {
+        list.innerHTML = '';
+        youEl = null;
+        visitors.forEach(function (v, i) {
+          var li = document.createElement('li');
+          li.style.animationDelay = (i * 60) + 'ms';
+          var lines = [
+            ['v-name', v.name.toUpperCase() + (me && v.session_id === me.session_id ? '  (you)' : '')],
+            ['', 'visited ' + date(v.started_at)],
+            ['', 'stayed ' + stay(v.duration_s)],
+            ['', leftText(v)]
+          ];
+          if (me && v.session_id === me.session_id) {
+            li.className = 'you';
+            lines.push(['dim you-seen', 'last seen: ' + agoText(v.ended_at)]);
+          }
+          lines.forEach(function (l) {
+            var span = document.createElement('span');
+            span.className = 'v-line ' + l[0];
+            span.textContent = l[1];
+            li.appendChild(span);
+          });
+          if (li.className === 'you') youEl = li.querySelector('.you-seen');
+          list.appendChild(li);
+        });
+      }
+
+      function load(n) {
+        status.textContent = 'reading the archive…';
+        fetch(NS.config.archiveUrl + '?page=' + n, { cache: 'no-store' })
+          .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+          .then(function (data) {
+            page = data.page;
+            var visitors = data.visitors;
+            var total = data.total;
+            if (me && page === 0 && !visitors.some(function (v) { return v.session_id === me.session_id; })) {
+              visitors = [localTrace()].concat(visitors);
+              total++;
+            }
+            var pending = NS.pending();
+            status.textContent = total + (total === 1 ? ' visitor' : ' visitors') + ' remembered' +
+              (pending ? ' · ' + pending + ' still being written' : '');
+            render(visitors);
+            document.getElementById('pager').hidden = data.pages <= 1;
+            document.getElementById('newer').disabled = page === 0;
+            document.getElementById('older').disabled = page >= data.pages - 1;
+            document.getElementById('pageInfo').textContent = 'page ' + (page + 1) + ' of ' + Math.max(1, data.pages);
+          })
+          .catch(function () {
+            var pending = NS.pending();
+            status.textContent = 'the archive could not be reached right now.' +
+              (pending ? ' ' + pending + ' visit' + (pending === 1 ? ' is' : 's are') + ' waiting to be written.' : '');
+            render(me ? [localTrace()] : []);
+          });
+      }
+
+      document.getElementById('newer').addEventListener('click', function () { load(page - 1); });
+      document.getElementById('older').addEventListener('click', function () { load(page + 1); });
+      setInterval(function () { if (youEl && me) youEl.textContent = 'last seen: ' + agoText(me.ended_at); }, 1000);
+      load(0);
+
+      // Kiosk hand-off, same as the cache page.
+      if (me) {
+        var next = document.getElementById('next');
+        var countdown = document.getElementById('countdown');
+        var resetAt = Date.now() + NS.config.resetMs;
+        next.hidden = false;
+        document.getElementById('newSession').addEventListener('click', NS.reset);
+        document.getElementById('back').addEventListener('click', function () {
+          location.href = '/cache/?id=' + encodeURIComponent(me.session_id);
+        });
+        (function tickDown() {
+          var left = Math.max(0, Math.ceil((resetAt - Date.now()) / 1000));
+          countdown.textContent = 'this terminal resets in ' + left + 's';
+          if (left === 0) NS.reset();
+          else setTimeout(tickDown, 250);
+        })();
+      }
+    })();
+  </script>
+</body>
+</html>

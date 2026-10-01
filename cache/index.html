@@ -23,7 +23,7 @@
     .dim { color: #777; }
     #next { display: flex; align-items: baseline; gap: 1.2em; flex-wrap: wrap; margin-top: 0.4em; }
     #next[hidden] { display: none; }
-    #newSession {
+    #newSession, #viewArchive {
       font: inherit;
       color: #000;
       background: #fff;
@@ -31,7 +31,7 @@
       padding: 0.35em 0.8em;
       cursor: pointer;
     }
-    #newSession:hover, #newSession:focus-visible { background: #000; color: #fff; outline: none; }
+    #newSession:hover, #newSession:focus-visible, #viewArchive:hover, #viewArchive:focus-visible { background: #000; color: #fff; outline: none; }
     #countdown { font-size: 0.75em; }
   </style>
 </head>
@@ -41,6 +41,7 @@
   <pre id="record"></pre>
   <hr>
   <div id="next" hidden>
+    <button type="button" id="viewArchive">[ VIEW PREVIOUS VISITORS ]</button>
     <button type="button" id="newSession">[ START A NEW SESSION ]</button>
     <span class="dim" id="countdown"></span>
   </div>
@@ -138,6 +139,7 @@
       var countdown = document.getElementById('countdown');
       var resetAt = Date.now() + CONFIG.resetMs;
       document.getElementById('newSession').addEventListener('click', NS.reset);
+      document.getElementById('viewArchive').addEventListener('click', function () { location.href = '/archive/'; });
       setTimeout(function () { next.hidden = false; }, 400 + lines.length * 160 + 600);
       (function tickDown() {
         var left = Math.max(0, Math.ceil((resetAt - Date.now()) / 1000));
