@@ -228,7 +228,19 @@ body {
 .ad-row { display: flex; gap: 6px; align-items: flex-start; }
 .ad-row img { width: 90px; height: 68px; object-fit: cover; flex: none; }
 .ad-body { margin: 0; color: #333; }
-.ad-like { display: inline-block; margin-top: 3px; color: #3b5998; font-size: 10px; }
+.ad-cta {
+  display: inline-block;
+  margin-top: 5px;
+  padding: 2px 8px 3px;
+  color: #fff;
+  background: #5b74a8;
+  border: 1px solid;
+  border-color: #29447e #29447e #1a356e;
+  font-weight: bold;
+  font-size: 11px;
+}
+
+.creative--text:hover .ad-cta { background: #4f6aa3; }
 
 .ad-controls {
   position: absolute;

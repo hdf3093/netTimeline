@@ -49,70 +49,83 @@
   var GENERIC_REASON = 'because you are here.';
 
   var GENERIC_TEXT = [
-    { title: 'Make $$$ from home!', site: 'easy-money.example', body: 'Moms and teens are earning hundreds a week.' },
-    { title: 'FREE ringtones', site: 'ringtones.example', body: 'Text JOIN to get the hottest songs on your phone!' },
-    { title: 'Is your crush into you?', site: 'quizzes.example', body: 'Take the 10 question quiz and find out.' },
-    { title: 'Win an iPod nano', site: 'prizes.example', body: 'Answer one question. Ends tonight!' }
+    { title: 'Make $$$ from home!', site: 'easy-money.example', body: 'Moms and teens are earning hundreds a week.', cta: 'Learn more' },
+    { title: 'FREE ringtones', site: 'ringtones.example', body: 'Text JOIN to get the hottest songs on your phone!', cta: 'Get ringtones' },
+    { title: 'Is your crush into you?', site: 'quizzes.example', body: 'Take the 10 question quiz and find out.', cta: 'Take quiz' },
+    { title: 'Win an iPod nano', site: 'prizes.example', body: 'Answer one question. Ends tonight!', cta: 'Enter now' }
   ];
 
   // Each targeted ad only appears if the session gives it a reason.
   var TARGETED = [
     function () {
       var ms = msIn('nostalgia');
-      return ms > 0 && { img: '/sites/s-l1200.webp', title: 'Rare Squishies — Ships Today!', site: 'squishyshop.example',
-        body: first + ', the ones you remember are back in stock.', reason: 'because you spent ' + dur(ms) + ' in Nostalgia, Looped.' };
+      return ms > 0 && { img: '/sites/s-l1200.webp', title: 'Rare Squishies — 40% OFF today', site: 'squishyshop.example',
+        body: 'Back in stock: the ones you remember. Free shipping!', cta: 'Shop now',
+        reason: 'because you spent ' + dur(ms) + ' in Nostalgia, Looped.' };
     },
     function () {
       var t = lastSeen('nostalgia');
-      return t && { img: '/sites/93010883f563a992b9de300d3b87f347.jpg', title: 'Complete your collection ♡', site: 'kawaii-deals.example',
-        body: 'Only 2 left!! Don’t let someone else get yours.', reason: 'because you visited Nostalgia, Looped ' + ago(t) + '.' };
+      return t && { img: '/sites/93010883f563a992b9de300d3b87f347.jpg', title: 'Complete your collection', site: 'kawaii-deals.example',
+        body: 'Only 2 left at this price!!', cta: 'Buy now',
+        reason: 'because you visited Nostalgia, Looped ' + ago(t) + '.' };
     },
     function () {
-      return s && s.terms === 'declined' && { title: 'You said no.', site: 'net.timeline', body: 'We heard maybe. Try us again — no commitment.',
+      return s && s.terms === 'declined' && { title: 'Changed your mind?', site: 'optin.example',
+        body: 'Opt in to emails now and unlock 10% off your first order.', cta: 'Opt in',
         reason: 'because you declined the Terms of Existence.' };
     },
     function () {
-      return s && s.terms === 'accepted' && { title: 'Thanks for agreeing!', site: 'net.timeline', body: 'Here’s something just for you, ' + first + '.',
+      return s && s.terms === 'accepted' && { title: 'Members save more', site: 'rewards.example',
+        body: 'You already agreed once. Sign up free and earn points on every purchase.', cta: 'Join free',
         reason: 'because you agreed to the Terms of Existence.' };
     },
     function () {
-      return s && s.cancels > 0 && { title: 'Leaving so soon?', site: 'stay.example', body: 'Stay a little longer and save 20%.',
+      return s && s.cancels > 0 && { title: 'Wait! Don’t go yet', site: 'stay.example',
+        body: 'Stay 5 more minutes and get 20% off.', cta: 'Claim 20% off',
         reason: 'because you tried to end your session ' + s.cancels + (s.cancels === 1 ? ' time.' : ' times.') };
     },
     function () {
       var ms = hesitation();
-      return ms > 4000 && { title: 'Still deciding?', site: 'choices.example', body: 'Let us choose for you. It’s easier.',
+      return ms > 4000 && { title: 'Can’t decide?', site: 'quiz.example',
+        body: 'Take our 30-second quiz and we’ll pick for you.', cta: 'Start quiz',
         reason: 'because you spent ' + dur(ms) + ' deciding where to go.' };
     },
     function () {
       var ms = msIn('ascii');
-      return ms > 0 && { img: '/images/mirror1.gif', title: 'Flawless in 3 days', site: 'glow.example', body: 'See yourself the way everyone else does.',
+      return ms > 0 && { img: '/images/mirror1.gif', title: 'Flawless skin in 3 days', site: 'glow.example',
+        body: 'Dermatologist approved. Try it risk-free.', cta: 'Try free',
         reason: 'because you looked at yourself in Mirror for ' + dur(ms) + '.' };
     },
     function () {
       var ms = msIn('surveilled');
-      return ms > 0 && { title: 'Feeling watched?', site: 'privacyguard.example', body: 'PrivacyGuard Pro keeps your data safe*.  *with us',
+      return ms > 0 && { title: 'Feeling watched?', site: 'privacyguard.example',
+        body: 'Protect your data with PrivacyGuard Pro — just $4.99/mo.', cta: 'Get protected',
         reason: 'because you spent ' + dur(ms) + ' being watched in Surveilled.' };
     },
     function () {
-      return s && s.camera === 'granted' && { img: '/images/AngelMirror.gif', title: 'You look great today', site: 'selfie.example', body: 'Share your best angle with 300 friends.',
+      return s && s.camera === 'granted' && { img: '/images/AngelMirror.gif', title: 'Look your best on camera', site: 'ringlight.example',
+        body: 'Ring lights from $19.99. Free shipping.', cta: 'Shop lights',
         reason: 'because you let a portal see your face.' };
     },
     function () {
-      return msIn('lib') > 0 && { title: 'Readers like you also bought', site: 'books.example', body: 'A Cyborg Manifesto (paperback) — free shipping.',
+      return msIn('lib') > 0 && { title: 'Readers like you also bought', site: 'books.example',
+        body: 'A Cyborg Manifesto (paperback) — $12.99.', cta: 'Add to cart',
         reason: 'because you visited the library.' };
     },
     function () {
-      return s && s.clicks > 10 && { img: '/images/iloveclicks3.gif', title: 'You love to click!', site: 'clicks.example', body: 'Every click counts. Especially yours.',
+      return s && s.clicks > 10 && { img: '/images/iloveclicks3.gif', title: 'Get paid to click!', site: 'clicks.example',
+        body: 'Earn cash for every ad you click. Sign up in seconds.', cta: 'Sign up',
         reason: 'because you have clicked ' + s.clicks + ' times this session.' };
     },
     function () {
       var h = new Date().getHours();
       var time = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-      return (h >= 21 || h < 5) && { title: 'Up late?', site: 'sleep.example', body: 'Treat yourself. You deserve it.', reason: 'because it’s ' + time + '.' };
+      return (h >= 21 || h < 5) && { title: 'Late-night deals', site: 'deals.example',
+        body: 'Prices drop at midnight. Don’t miss out.', cta: 'Shop deals', reason: 'because it’s ' + time + '.' };
     },
     function () {
-      return s && { title: first + ', this one’s for you ♡', site: 'foryou.example', body: 'Picked just for you. Nobody else sees this.',
+      return s && { title: first + ', you’ve been selected!', site: 'prizes.example',
+        body: 'Claim your free $50 gift card. Today only.', cta: 'Claim now',
         reason: 'because you told us your name.' };
     }
   ];
@@ -183,7 +196,6 @@
       learn();
       if (opts.onClose) opts.onClose(e);
       spawnPopup(e.clientX, e.clientY);
-      spawnPopup(e.clientX, e.clientY);
     });
     countServed();
     return wrap;
@@ -203,10 +215,11 @@
     c.innerHTML =
       '<a class="ad-title"></a><span class="ad-site"></span>' +
       '<div class="ad-row">' + (ad.img ? '<img alt="">' : '') + '<p class="ad-body"></p></div>' +
-      '<span class="ad-like">Like</span>';
+      '<span class="ad-cta"></span>';
     c.querySelector('.ad-title').textContent = ad.title;
     c.querySelector('.ad-site').textContent = ad.site;
     c.querySelector('.ad-body').textContent = ad.body;
+    c.querySelector('.ad-cta').textContent = ad.cta || 'Learn more';
     if (ad.img) c.querySelector('img').src = ad.img;
     return c;
   }
@@ -289,7 +302,7 @@
   /* ---------- pop-ups ---------- */
 
   var popups = document.getElementById('popups');
-  var MAX_POPUPS = 8;
+  var MAX_POPUPS = 5;
   var popupCount = 0;
 
   function spawnPopup(x, y) {
@@ -323,7 +336,6 @@
       win.remove();
       learn();
       spawnPopup(e.clientX, e.clientY);
-      spawnPopup(e.clientX, e.clientY);
     });
     popups.appendChild(win);
   }
@@ -348,8 +360,8 @@
   function drop() {
     var uncovered = document.querySelectorAll('.game:not(.is-covered)');
     var roll = Math.random();
-    if (roll < 0.4) spawnPopup();
-    else if (roll < 0.75 && uncovered.length) cover(uncovered[Math.floor(Math.random() * uncovered.length)]);
+    if (roll < 0.15) spawnPopup();
+    else if (roll < 0.7 && uncovered.length) cover(uncovered[Math.floor(Math.random() * uncovered.length)]);
     else if (sticky.hidden) showSticky();
     else learn();
     setTimeout(drop, Math.max(1800, 7000 - level * 350));
