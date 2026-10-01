@@ -22,7 +22,7 @@
   ];
 
   var STATE_KEY = 'nt.desktop';
-  var state = { open: true, min: false, max: false, tab: 'board' };
+  var state = { min: false, max: false, tab: 'board' };
   try { Object.assign(state, JSON.parse(sessionStorage.getItem(STATE_KEY) || '{}')); } catch (e) {}
   function saveState() { try { sessionStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch (e) {} }
 
@@ -107,7 +107,7 @@
   TABS.forEach(function (t) {
     var tab = document.createElement('div');
     tab.className = 'b-tab';
-    tab.innerHTML = '<span class="b-tab-title"></span><span class="b-tab-close" aria-hidden="true">×</span>';
+    tab.innerHTML = '<span class="b-tab-title"></span>';
     tab.querySelector('.b-tab-title').textContent = t.title;
     tab.addEventListener('click', function () { showTab(t.id); });
     btabs.appendChild(tab);
@@ -160,9 +160,9 @@
   }
 
   function render() {
-    browser.hidden = !state.open || state.min;
+    browser.hidden = state.min;
     browser.classList.toggle('is-max', state.max);
-    if (state.open && !task) {
+    if (!task) {
       task = document.createElement('button');
       task.type = 'button';
       task.className = 'task';
@@ -170,12 +170,10 @@
       task.addEventListener('click', function () { state.min = !state.min; saveState(); render(); });
       tasks.appendChild(task);
     }
-    if (!state.open && task) { task.remove(); task = null; }
     if (task) task.classList.toggle('is-active', !state.min);
   }
 
   function openBrowser(tabId) {
-    state.open = true;
     state.min = false;
     saveState();
     render();
@@ -184,7 +182,8 @@
 
   document.getElementById('bMin').addEventListener('click', function () { state.min = true; saveState(); render(); });
   document.getElementById('bMax').addEventListener('click', function () { state.max = !state.max; saveState(); render(); });
-  document.getElementById('bClose').addEventListener('click', function () { state.open = false; saveState(); render(); });
+  // Closing just tucks it into the taskbar: the board, library and archive are always open.
+  document.getElementById('bClose').addEventListener('click', function () { state.min = true; saveState(); render(); });
   document.getElementById('bBack').addEventListener('click', function () {
     try { frames[state.tab].contentWindow.history.back(); } catch (e) {}
   });
@@ -195,8 +194,9 @@
     try { frames[state.tab].contentWindow.location.reload(); } catch (e) {}
   });
 
+  TABS.forEach(function (t) { frameFor(t.id); });
   render();
-  if (state.open) showTab(state.tab);
+  showTab(state.tab);
 
   /* ---------- start menu ---------- */
 
