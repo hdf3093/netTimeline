@@ -59,8 +59,10 @@
       '<button class="gate-enter" type="submit">[ ENTER ]</button>' +
     '</form>' +
     '<div class="terms-backdrop" id="terms" hidden>' +
-      '<div class="terms-window" role="dialog" aria-modal="true" aria-labelledby="termsTitle">' +
-        '<div class="terms-titlebar" id="termsTitle">Terms of Existence — net.timeline</div>' +
+      '<div class="terms-window" role="dialog" aria-modal="true" aria-labelledby="termsTitle"><div class="terms-inner">' +
+        '<div class="terms-titlebar" id="termsTitle">Terms of Existence</div>' +
+        '<div class="terms-app"><span class="terms-icon" aria-hidden="true">n.t</span>' +
+          '<span><b>net.timeline</b> would like you to agree to the following.</span></div>' +
         '<div class="terms-text" id="termsText" tabindex="0"></div>' +
         '<div class="terms-buttons" id="termsButtons">' +
           '<button type="button" data-choice="accepted">[ I AGREE ]</button>' +
@@ -70,7 +72,7 @@
           '<p>Your refusal has been recorded.</p>' +
           '<button type="button" id="termsContinue">[ CONTINUE ]</button>' +
         '</div>' +
-      '</div>' +
+      '</div></div>' +
     '</div>';
   document.body.appendChild(gate);
 
