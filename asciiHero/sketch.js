@@ -2,11 +2,10 @@
 // Frames are read into pixels to pick characters, then discarded. Nothing is saved.
 
 const SETS = [
-  { name: 'ascii',   ramp: " .'`^\",:;Il!i~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$" },
-  { name: 'braille', ramp: ' ⠁⠂⠃⠅⠇⠏⠟⠿⡿⣿' },
-  { name: 'binary',  ramp: '   ··0011' },
-  { name: 'kawaii',  ramp: ' ･.:+*☆★✿♡' },
-  { name: 'diary',   phrase: "i'm alive and breathing · " }
+  { name: 'ascii',  ramp: " .'`^\",:;Il!i~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$" },
+  { name: 'human',  phrase: "i'm alive and breathing · " },
+  { name: 'binary', ramp: '   ··0011' },
+  { name: '>_<',    phrase: '>_<' }
 ];
 
 const COLORS = ['pink', 'terminal', 'rainbow', 'paper'];
@@ -32,7 +31,7 @@ let cameraDenied = false;
 
 let setIndex = 0;
 let colorIndex = 0;
-let fontSize = 14;
+let fontSize = 16;
 
 let cols = 0, rows = 0, cellW = 0, cellH = 0;
 let sparkle = null;
@@ -43,7 +42,7 @@ let ui = {};
 function setup() {
   createCanvas(windowWidth, windowHeight);
   pixelDensity(1);
-  frameRate(30);
+  frameRate(24);
   buildGrid();
   buildUI();
   applyColorMode();
@@ -61,6 +60,7 @@ function buildGrid() {
   cols = Math.ceil(width / cellW);
   rows = Math.ceil(height / cellH);
   sparkle = new Float32Array(cols * rows);
+  glyphs = new Map(); // sizes changed
 }
 
 /* ---------- camera ---------- */
@@ -100,6 +100,30 @@ function exitPortal() {
 
 /* ---------- drawing ---------- */
 
+// Each character is drawn once into a small bitmap (glow included) and then
+// stamped; the whole picture is coloured in one pass. Far cheaper than
+// typesetting every character every frame.
+const GLOW_PAD = 4;
+let glyphs = new Map();
+
+function glyph(ch, glow) {
+  const key = (glow ? 'g' : 'p') + ch;
+  let g = glyphs.get(key);
+  if (g) return g;
+  g = document.createElement('canvas');
+  g.width = Math.ceil(cellW + GLOW_PAD * 2);
+  g.height = Math.ceil(cellH + GLOW_PAD * 2);
+  const c = g.getContext('2d');
+  c.font = `bold ${fontSize}px 'Courier New', Courier, monospace`;
+  c.textAlign = 'center';
+  c.textBaseline = 'middle';
+  c.fillStyle = '#fff';
+  if (glow) { c.shadowColor = 'rgba(255, 255, 255, 0.85)'; c.shadowBlur = 4; }
+  c.fillText(ch, g.width / 2, g.height / 2);
+  glyphs.set(key, g);
+  return g;
+}
+
 function draw() {
   const live = inPortal && video && videoReady && video.loadedmetadata !== false;
   const levels = live ? sampleVideo() : sampleStatic();
@@ -107,32 +131,22 @@ function draw() {
 
   const set = SETS[setIndex];
   const mode = COLORS[colorIndex];
+  const glow = mode !== 'paper';
   const ctx = drawingContext;
   const t = millis() / 1000;
+  const sparkled = [];
 
-  background(mode === 'paper' ? 250 : 0);
-  ctx.font = `bold ${fontSize}px 'Courier New', Courier, monospace`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-
-  const base = mode === 'pink' ? '#ff8ce6' : mode === 'terminal' ? '#5cff88' : mode === 'paper' ? '#111' : null;
-  if (base) ctx.fillStyle = base;
+  clear(); // the page background shows through (black, or white for paper)
 
   for (let j = 0; j < rows; j++) {
-    const y = j * cellH + cellH / 2;
+    const y = j * cellH - GLOW_PAD;
     for (let i = 0; i < cols; i++) {
       const k = i + j * cols;
       let b = levels[k];
       if (mode === 'paper') b = 1 - b;
 
       const s = sparkle[k];
-      if (s > 0.15 && Math.random() < s) {
-        ctx.fillStyle = mode === 'paper' ? '#ff3fb4' : '#fff';
-        ctx.globalAlpha = 1;
-        ctx.fillText(SPARKLES[(k + frameCount) % SPARKLES.length], i * cellW + cellW / 2, y);
-        if (base) ctx.fillStyle = base;
-        continue;
-      }
+      if (s > 0.15 && Math.random() < s) { sparkled.push(k); continue; }
 
       let ch;
       if (set.phrase) {
@@ -143,14 +157,34 @@ function draw() {
         ctx.globalAlpha = 1;
       }
       if (ch === ' ') continue;
-
-      if (mode === 'rainbow') {
-        ctx.fillStyle = `hsl(${(i * 4 + j * 3 + t * 90) % 360}, 100%, ${45 + b * 35}%)`;
-      }
-      ctx.fillText(ch, i * cellW + cellW / 2, y);
+      ctx.drawImage(glyph(ch, glow), i * cellW - GLOW_PAD, y);
     }
   }
   ctx.globalAlpha = 1;
+
+  // Colour everything already drawn, in one pass.
+  ctx.globalCompositeOperation = 'source-atop';
+  if (mode === 'rainbow') {
+    const g = ctx.createLinearGradient(0, 0, width, height);
+    for (let n = 0; n <= 6; n++) g.addColorStop(n / 6, `hsl(${(t * 90 + n * 60) % 360}, 100%, 65%)`);
+    ctx.fillStyle = g;
+  } else {
+    ctx.fillStyle = mode === 'pink' ? '#ff8ce6' : mode === 'terminal' ? '#5cff88' : '#111';
+  }
+  ctx.fillRect(0, 0, width, height);
+  ctx.globalCompositeOperation = 'source-over';
+
+  // Glitter on top, in its own colour.
+  if (sparkled.length) {
+    ctx.font = `bold ${fontSize}px 'Courier New', Courier, monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = mode === 'paper' ? '#ff3fb4' : '#fff';
+    sparkled.forEach((k) => {
+      const i = k % cols, j = Math.floor(k / cols);
+      ctx.fillText(SPARKLES[(k + frameCount) % SPARKLES.length], i * cellW + cellW / 2, j * cellH + cellH / 2);
+    });
+  }
 
   for (let k = 0; k < sparkle.length; k++) sparkle[k] *= 0.9;
 

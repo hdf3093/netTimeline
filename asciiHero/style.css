@@ -12,10 +12,6 @@ canvas {
   cursor: crosshair;
 }
 
-/* The glow is applied to the whole canvas, which is far cheaper than per-character shadows. */
-body[data-mode="pink"] canvas     { filter: drop-shadow(0 0 4px rgba(255, 110, 220, 0.85)); }
-body[data-mode="terminal"] canvas { filter: drop-shadow(0 0 4px rgba(70, 255, 120, 0.75)); }
-body[data-mode="rainbow"] canvas  { filter: saturate(1.3) drop-shadow(0 0 3px rgba(255, 255, 255, 0.4)); }
 body[data-mode="paper"]           { background: #fafafa; }
 
 /* ---------- start screen ---------- */
