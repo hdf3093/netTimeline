@@ -3,44 +3,29 @@
   <head>
     <script src="/session/session.js" data-portal="ascii"></script>
     <script src="/vendor/p5.min.js"></script>
-    <script src="/vendor/p5.sound.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="style.css">
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASCII Portal — net.timeline</title>
-    <style>
-      .back-nav {
-        position: fixed;
-        top: 12px;
-        right: 16px;
-        z-index: 100;
-        font-family: 'Courier', monospace;
-        font-size: 11px;
-        color: #555;
-        text-decoration: none;
-        letter-spacing: 0.05em;
-        transition: color 0.2s;
-      }
-      .back-nav:hover {
-        color: #fff;
-      }
-      .portal-caption {
-        position: fixed;
-        bottom: 18px;
-        left: 50%;
-        transform: translateX(-50%);
-        text-align: center;
-        color: #333;
-        font-size: 10px;
-        font-family: 'Courier', monospace;
-        pointer-events: none;
-        letter-spacing: 0.12em;
-        white-space: nowrap;
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="style.css">
   </head>
-  <body>
-    <main></main>
+  <body data-mode="pink">
+    <div class="start" id="start">
+      <p class="start-kicker">~*~ portal ~*~</p>
+      <h1 class="start-title">enter the feed</h1>
+      <p class="start-sub">this portal turns you into text.<br>your camera is used live and nothing is saved.</p>
+      <button type="button" class="y2k-btn y2k-btn--big" id="enterBtn">[ ENTER THE FEED ]</button>
+    </div>
+
+    <div class="toolbar" id="toolbar" hidden>
+      <button type="button" class="y2k-btn" id="exitBtn">[ EXIT FEED ]</button>
+      <button type="button" class="y2k-btn" id="setBtn"></button>
+      <button type="button" class="y2k-btn" id="colorBtn"></button>
+      <span class="hint">click · change what you're made of &nbsp;&nbsp; scroll · change your resolution &nbsp;&nbsp; C · change your glow</span>
+    </div>
+
+    <div class="status" id="status" aria-live="polite"></div>
     <div class="portal-caption">your face as data &nbsp;·&nbsp; your data as image</div>
+
     <script src="sketch.js"></script>
   </body>
 </html>

@@ -181,9 +181,10 @@
   function installTracker() {
     var lastX = null, lastY = null;
 
-    document.addEventListener('pointerdown', function () { s.clicks++; }, true);
-    document.addEventListener('keydown', function () { s.keys++; }, true);
+    document.addEventListener('pointerdown', function () { if (s) s.clicks++; }, true);
+    document.addEventListener('keydown', function () { if (s) s.keys++; }, true);
     document.addEventListener('pointermove', function (e) {
+      if (!s) return;
       if (lastX !== null) s.mouse_px += Math.round(Math.hypot(e.clientX - lastX, e.clientY - lastY));
       lastX = e.clientX;
       lastY = e.clientY;

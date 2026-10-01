@@ -1,13 +1,152 @@
 html, body {
   margin: 0;
   padding: 0;
-  background-color: #000;
-  font-family: 'Courier';
-  color: #FFF;
-  font-size: 12pt;
-  line-height: 10pt;
+  background: #000;
+  overflow: hidden;
+  font-family: 'Courier New', Courier, monospace;
+  color: #fff;
 }
 
 canvas {
   display: block;
+  cursor: crosshair;
+}
+
+/* The glow is applied to the whole canvas, which is far cheaper than per-character shadows. */
+body[data-mode="pink"] canvas     { filter: drop-shadow(0 0 4px rgba(255, 110, 220, 0.85)); }
+body[data-mode="terminal"] canvas { filter: drop-shadow(0 0 4px rgba(70, 255, 120, 0.75)); }
+body[data-mode="rainbow"] canvas  { filter: saturate(1.3) drop-shadow(0 0 3px rgba(255, 255, 255, 0.4)); }
+body[data-mode="paper"]           { background: #fafafa; }
+
+/* ---------- start screen ---------- */
+
+.start {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.start[hidden] { display: none; }
+.start > * { pointer-events: auto; }
+
+.start-kicker {
+  margin: 0;
+  color: #ffb3f0;
+  letter-spacing: 0.3em;
+  font-size: 13px;
+}
+
+.start-title {
+  margin: 8px 0 12px;
+  font-size: clamp(40px, 8vw, 110px);
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 0 12px #ff5fd2, 0 0 30px #ff5fd2, 0 0 60px #b400ff;
+  animation: pulse 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+  from { opacity: 0.85; }
+  to { opacity: 1; text-shadow: 0 0 16px #ff5fd2, 0 0 44px #ff5fd2, 0 0 90px #b400ff; }
+}
+
+.start-sub {
+  margin: 0 0 28px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #ffd6f6;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 4px 10px;
+}
+
+/* ---------- buttons ---------- */
+
+.y2k-btn {
+  font: bold 13px 'Courier New', Courier, monospace;
+  color: #5a0046;
+  background: linear-gradient(#fff 0%, #ffd1f3 45%, #ff9fe4 55%, #ffc4ef 100%);
+  border: 1px solid #c2008f;
+  border-radius: 12px;
+  padding: 7px 14px;
+  box-shadow: 0 0 10px rgba(255, 95, 210, 0.6), inset 0 1px 0 #fff;
+  cursor: pointer;
+}
+
+.y2k-btn:hover, .y2k-btn:focus-visible {
+  background: linear-gradient(#fff 0%, #ffe6f8 45%, #ffb8ea 55%, #ffd6f4 100%);
+  box-shadow: 0 0 16px rgba(255, 95, 210, 0.95), inset 0 1px 0 #fff;
+  outline: none;
+}
+
+.y2k-btn--big {
+  font-size: 18px;
+  padding: 12px 26px;
+  border-radius: 18px;
+}
+
+/* ---------- toolbar + status ---------- */
+
+.toolbar {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+}
+
+.toolbar[hidden] { display: none; }
+
+.hint {
+  font-size: 11px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 4px 8px;
+  letter-spacing: 0.04em;
+}
+
+body[data-mode="paper"] .hint,
+body[data-mode="paper"] .status,
+body[data-mode="paper"] .portal-caption { color: #000; background: rgba(255, 255, 255, 0.75); }
+
+.status {
+  position: fixed;
+  left: 14px;
+  bottom: 46px;
+  z-index: 10;
+  font-size: 13px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 4px 8px;
+  max-width: 45vw;
+  pointer-events: none;
+}
+
+.status:empty { display: none; }
+.status.flash { animation: flash 0.6s steps(2) 2; }
+
+@keyframes flash { 50% { opacity: 0.2; } }
+
+.portal-caption {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #bbb;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 2px 8px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 5;
 }
