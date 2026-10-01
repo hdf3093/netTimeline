@@ -232,7 +232,6 @@ function readout(pos) {
     ['dwell time', dwellText],
     ['age_est', profile.age + ' (' + (0.55 + noise(millis() / 3000) * 0.4).toFixed(2) + ')'],
     ['ad_segment', profile.segment],
-    ['insecurity', (0.4 + noise(millis() / 4000 + 3) * 0.5).toFixed(2)],
     ['est_value', '$' + (0.003 + noise(millis() / 5000 + 9) * 0.003).toFixed(4) + ' / impression'],
     ['likely to', 'return'],
     ['consent', 'assumed'],
