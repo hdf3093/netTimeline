@@ -1,56 +1,191 @@
 html, body {
   margin: 0;
   padding: 0;
+  height: 100%;
+  overflow: hidden;
 }
 
 body {
   background-color: rgb(255, 200, 247);
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.8) 0 1.5px, transparent 2px),
+    radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.7) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 85% 20%, rgba(255, 255, 255, 0.9) 0 2px, transparent 2.5px);
+  background-size: 140px 140px, 90px 90px, 210px 210px;
+  animation: twinkle 6s linear infinite;
+  font-family: Tahoma, Verdana, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+@keyframes twinkle {
+  to { background-position: 140px 140px, -90px 90px, 210px -210px; }
+}
+
+/* ---------- banner ---------- */
+
+.banner {
+  text-align: center;
+  line-height: 1.1;
+}
+
+.banner h1 {
   margin: 0;
+  font: italic bold 26px/1 'Trebuchet MS', Verdana, sans-serif;
+  color: #fff;
+  text-shadow: 2px 2px 0 #ff4fb4, 4px 4px 0 #b8008a;
+  letter-spacing: 0.04em;
+}
+
+.banner p {
+  margin: 4px 0 0;
+  font: bold 13px 'Courier New', Courier, monospace;
+  color: #b8008a;
+}
+
+/* ---------- Y2K browser window ---------- */
+
+.window {
+  background: #ece9d8;
+  border: 1px solid #0831d9;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 4px 6px 0 rgba(184, 0, 138, 0.35);
+  overflow: hidden;
+}
+
+.win-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 4px 6px 4px 10px;
+  background: linear-gradient(#0997ff, #0053ee 10%, #0050ee 90%, #06f);
+  color: #fff;
+  font-weight: bold;
+  font-size: 13px;
+  text-shadow: 1px 1px #0f1089;
+}
+
+.win-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.win-controls { display: flex; gap: 2px; }
+
+.win-controls i {
+  font-style: normal;
+  width: 20px;
+  height: 18px;
+  line-height: 16px;
+  text-align: center;
+  font-size: 12px;
+  border: 1px solid #fff;
+  border-radius: 3px;
+  background: linear-gradient(#3c8cff, #1f5fe0);
+}
+
+.win-controls i:last-child { background: linear-gradient(#e87b5e, #c4381c); }
+
+.win-address {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  border-bottom: 1px solid #b0aca0;
+  font-size: 12px;
+}
+
+.win-address-label { color: #555; }
+
+.win-url {
+  flex: 1;
+  background: #fff;
+  border: 1px solid #7f9db9;
+  padding: 2px 6px;
+  font-family: 'Courier New', Courier, monospace;
+  color: #222;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.win-viewport { line-height: 0; }
+.win-viewport canvas { display: block; }
+
+.win-status {
+  padding: 3px 8px;
+  border-top: 1px solid #b0aca0;
+  font: 12px 'Courier New', Courier, monospace;
+  color: #333;
+  white-space: nowrap;
+}
+
+/* MSN nudge */
+.nudge { animation: nudge 0.5s linear; }
+
+@keyframes nudge {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-10px, 4px); }
+  20% { transform: translate(9px, -5px); }
+  30% { transform: translate(-8px, -3px); }
+  40% { transform: translate(7px, 5px); }
+  50% { transform: translate(-6px, 2px); }
+  60% { transform: translate(5px, -4px); }
+  70% { transform: translate(-4px, 3px); }
+  80% { transform: translate(3px, -2px); }
+  90% { transform: translate(-1px, 1px); }
+}
+
+/* ---------- glitter trail ---------- */
+
+.glitter {
+  position: fixed;
+  pointer-events: none;
+  z-index: 50;
+  font-size: 14px;
+  transform: translate(-50%, -50%);
+  text-shadow: 0 0 6px #fff;
+  animation: glitter 0.9s ease-out forwards;
+}
+
+@keyframes glitter {
+  to { opacity: 0; transform: translate(-50%, 30px) scale(0.4) rotate(90deg); }
+}
+
+/* ---------- all memories found ---------- */
+
+.done {
+  position: fixed;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh; /* Adjust as needed */
+  background: rgba(255, 200, 247, 0.55);
+  z-index: 40;
 }
 
-.screenwipe {
-  z-index: 9999;
-  position: absolute;
-  top: -10%;
-  height: 120%;
-  width: 120%;
-  left: 50%;
-  transform: translateX(-50%);
-  filter: blur(10px);
+.done[hidden] { display: none; }
+
+.done-box {
   background: #fff;
-  animation: wipe 2.5s ease-in-out 0.2s forwards reverse;
-}
-@keyframes wipe {
-  0% {
-    width: 0px;
-  }
-  5% {
-    width: 0px;
-  }
-  15% {
-    width: 80px;
-  }
-  100% {
-    width: 120%;
-  }
+  border: 3px double #ff4fb4;
+  padding: 22px 30px;
+  text-align: center;
+  font: 15px 'Courier New', Courier, monospace;
+  color: #8a0068;
+  box-shadow: 6px 6px 0 #ff9fe4;
 }
 
-#canvas-container {
-  position: relative;
+.done-box p { margin: 0 0 8px; }
+.done-title { font-weight: bold; font-size: 20px; }
+
+.done-box button {
+  margin-top: 8px;
+  font: bold 14px 'Courier New', Courier, monospace;
+  color: #5a0046;
+  background: linear-gradient(#fff, #ffd1f3 45%, #ff9fe4 55%, #ffc4ef);
+  border: 1px solid #c2008f;
+  border-radius: 12px;
+  padding: 7px 18px;
+  cursor: pointer;
 }
-
-canvas {
-  display: block;
-  margin: auto;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-}
-
-

@@ -4,27 +4,38 @@
     <script src="/session/session.js" data-portal="nostalgia"></script>
     <script src="/vendor/p5.min.js"></script>
     <script src="/vendor/p5.sound.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="style.css">
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nostalgia, Looped — net.timeline</title>
-    <style>
-      .back-nav {
-        position: fixed;
-        top: 12px;
-        right: 16px;
-        z-index: 9999;
-        font-family: 'Courier', monospace;
-        font-size: 11px;
-        color: #666;
-        text-decoration: none;
-        letter-spacing: 0.05em;
-        transition: color 0.2s;
-      }
-      .back-nav:hover { color: #000; }
-    </style>
+    <link rel="stylesheet" type="text/css" href="style.css?v=2">
   </head>
   <body>
-    <div id="content-container"> </div>
-    <script src="sketch.js"></script>
+    <header class="banner">
+      <h1>Nostalgia, Looped</h1>
+      <p id="count"></p>
+    </header>
+
+    <div class="window" id="window">
+      <div class="win-titlebar">
+        <span class="win-title" id="winTitle"></span>
+        <span class="win-controls" aria-hidden="true"><i>_</i><i>□</i><i>×</i></span>
+      </div>
+      <div class="win-address">
+        <span class="win-address-label">Address</span>
+        <span class="win-url" id="winUrl"></span>
+      </div>
+      <div class="win-viewport" id="viewport"></div>
+      <div class="win-status" id="winStatus">click the pink dots ♡</div>
+    </div>
+
+    <div class="done" id="done" hidden>
+      <div class="done-box">
+        <p class="done-title">you found every memory ♡</p>
+        <p>they loop anyway.</p>
+        <button type="button" id="again">[ again ]</button>
+      </div>
+    </div>
+
+    <script src="sketch.js?v=3"></script>
   </body>
 </html>
