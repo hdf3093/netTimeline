@@ -60,6 +60,12 @@ function setup() {
   el.back.addEventListener('click', goBack);
   document.getElementById('restoreBtn').addEventListener('click', restore);
 
+  const who = window.NetSession && NetSession.firstName();
+  if (who) {
+    document.getElementById('profileName').textContent = who;
+    document.getElementById('profile').hidden = false;
+  }
+
   const c = createCanvas(SIZE, SIZE);
   c.parent('viewport');
   fit();

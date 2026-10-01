@@ -252,3 +252,31 @@ button.nav-btn:not(:disabled):hover { background: #e3e3e3; border-color: #c4c4c4
   border-radius: 2px;
   cursor: pointer;
 }
+
+/* 2012 Chrome showed who was signed in, in the window frame. */
+.profile {
+  margin-left: auto;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 1px 6px 1px 2px;
+  font-size: 11px;
+  color: #33475f;
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(140, 157, 181, 0.7);
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.profile[hidden] { display: none; }
+
+.profile-pic {
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  background:
+    radial-gradient(circle at 50% 36%, #fff 0 22%, transparent 23%),
+    radial-gradient(ellipse 55% 40% at 50% 100%, #fff 0 60%, transparent 62%),
+    #c3cbd9;
+}

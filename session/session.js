@@ -29,6 +29,12 @@
   } catch (e) {}
 
   var KEY = 'nt.session';
+
+  // How places are named when a portal mentions them.
+  var PLACE_NAMES = {
+    nostalgia: 'nostalgia, looped', ascii: 'mirror', ads: 'sponsored', surveilled: 'surveilled',
+    lib: 'the library', board: 'the board'
+  };
   var QUEUE_KEY = 'nt.archiveQueue';
   var ENTER_URL = '/enter/';
 
@@ -100,6 +106,17 @@
     summary: function () { return summarize(s); },
     pending: function () { return readQueue().length; },
     setCameraActive: function (on) { cameraActive = !!on; lastInput = Date.now(); },
+    firstName: function () { return s ? s.name.split(/\s+/)[0] : ''; },
+    // Where you were just before this page, so a portal can mention it.
+    previousPortal: function () {
+      if (!s) return null;
+      for (var i = s.portals.length - 1; i >= 0; i--) {
+        var v = s.portals[i];
+        if (v.id === portalId || !PLACE_NAMES[v.id]) continue;
+        return { id: v.id, label: PLACE_NAMES[v.id], agoMs: Date.now() - Date.parse(v.exit) };
+      }
+      return null;
+    },
     // Pages shown inside the desktop's browser window report activity here.
     ping: function (type) {
       lastInput = Date.now();

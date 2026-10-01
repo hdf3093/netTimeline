@@ -13,13 +13,15 @@ const COLORS = ['pink', 'terminal', 'rainbow', 'paper'];
 
 const SPARKLES = '✦✧⋆*+·';
 
+// {name} and {last} come from this visit; lines that need them are skipped if they're missing.
 const STATUS = [
   'reading your face… 72%',
-  'you are {n} characters',
+  'you are {n} characters, {name}',
+  'still looking like you did in {last}?',
   'you are {rows} lines tall',
   'brightness → meaning',
   'resolution lowered for your comfort',
-  'do you look like you?',
+  '{name}, do you look like you?',
   'this is what a camera sees',
   'you will be seen, you will not be kept.'
 ];
@@ -281,9 +283,15 @@ function rotateStatus() {
   let i = 0;
   setInterval(() => {
     if (!inPortal || (cameraDenied && !videoReady)) return;
-    const line = STATUS[i++ % STATUS.length]
+    const name = window.NetSession ? NetSession.firstName() : '';
+    const prev = window.NetSession && NetSession.previousPortal();
+    let line = STATUS[i++ % STATUS.length];
+    if ((line.includes('{name}') && !name) || (line.includes('{last}') && !prev)) line = STATUS[0];
+    line = line
       .replace('{n}', (cols * rows).toLocaleString())
-      .replace('{rows}', rows);
+      .replace('{rows}', rows)
+      .replace('{name}', name)
+      .replace('{last}', prev ? prev.label : '');
     ui.status.textContent = line;
     ui.status.classList.remove('flash');
     void ui.status.offsetWidth;

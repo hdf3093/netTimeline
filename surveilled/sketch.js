@@ -224,6 +224,7 @@ function readout(pos) {
 
   return [
     ['faceprint', hex.match(/.{4}/g).join('·')],
+    ...lastSeenRow(),
     ['landmarks', pos.length + ' / 71 tracked'],
     ['head tilt', (tilt >= 0 ? '+' : '−') + Math.abs(tilt).toFixed(1) + '°'],
     ['distance', '~' + Math.round(4200 / faceW) + ' cm'],
@@ -241,9 +242,18 @@ function readout(pos) {
   ];
 }
 
+// "last seen in: mirror (2m ago)", from this visit's trail.
+function lastSeenRow() {
+  const prev = window.NetSession && NetSession.previousPortal();
+  if (!prev) return [];
+  const sec = Math.round(prev.agoMs / 1000);
+  const ago = sec < 60 ? sec + 's ago' : Math.floor(sec / 60) + 'm ago';
+  return [['last seen in', prev.label + ' (' + ago + ')']];
+}
+
 function drawReadout(x, y, pos) {
   const rows = readout(pos);
-  const lh = 17, w = 290;
+  const lh = 17, w = 320;
   const x0 = Math.min(x, width - w - 12);
   const h = lh * (rows.length + 3) + 10;
   const y0 = constrain(y, 12, height - h - 60);
@@ -259,7 +269,8 @@ function drawReadout(x, y, pos) {
   textSize(12);
   textAlign(LEFT, TOP);
   fill(255);
-  text('SUBJECT_01', x0 + 8, y0 + 4);
+  const who = window.NetSession && NetSession.firstName();
+  text('SUBJECT: ' + (who ? who.toUpperCase() : '01'), x0 + 8, y0 + 4);
 
   rows.forEach(([k, v], n) => {
     const ty = y0 + lh * (n + 1) + 8;

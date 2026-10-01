@@ -73,6 +73,14 @@
           '<button type="button" id="termsContinue">[ CONTINUE ]</button>' +
         '</div>' +
       '</div></div>' +
+      '<div class="terms-warn" id="termsWarn" hidden role="alertdialog" aria-labelledby="warnTitle"><div class="terms-inner">' +
+        '<div class="terms-titlebar" id="warnTitle">Are you sure?</div>' +
+        '<p class="terms-warn-body">Did you mean <b>I Agree</b>?</p>' +
+        '<div class="terms-buttons">' +
+          '<button type="button" data-warn="agree">[ I Agree ]</button>' +
+          '<button type="button" data-warn="decline">[ No, I do not agree ]</button>' +
+        '</div>' +
+      '</div></div>' +
     '</div>';
   document.body.appendChild(gate);
 
@@ -84,6 +92,7 @@
   var buttons = gate.querySelector('#termsButtons');
   var refusal = gate.querySelector('#termsRefusal');
   var refused = gate.querySelector('#gateRefused');
+  var warn = gate.querySelector('#termsWarn');
   var enterAfterTerms = false;
 
   var text = gate.querySelector('#termsText');
@@ -150,6 +159,19 @@
   buttons.addEventListener('click', function (e) {
     var choice = e.target.getAttribute && e.target.getAttribute('data-choice');
     if (!choice) return;
+    // Saying no takes two tries.
+    if (choice === 'declined') { warn.hidden = false; warn.querySelector('[data-warn="agree"]').focus(); return; }
+    decide(choice);
+  });
+
+  warn.addEventListener('click', function (e) {
+    var pick = e.target.getAttribute && e.target.getAttribute('data-warn');
+    if (!pick) return;
+    warn.hidden = true;
+    decide(pick === 'agree' ? 'accepted' : 'declined');
+  });
+
+  function decide(choice) {
     terms = choice;
     agree.checked = choice === 'accepted';
     refused.hidden = choice !== 'declined';
@@ -161,7 +183,7 @@
     }
     closeTerms();
     if (enterAfterTerms) enter();
-  });
+  }
 
   // Declining still lets the visitor in, but only once they choose to enter.
   gate.querySelector('#termsContinue').addEventListener('click', function () {
@@ -171,6 +193,7 @@
   });
 
   modal.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !warn.hidden) { warn.hidden = true; return; }
     if (e.key === 'Escape' && !buttons.hidden) closeTerms();
   });
 

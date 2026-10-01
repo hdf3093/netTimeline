@@ -210,4 +210,38 @@ html:not(.nt-gate) .gate { display: none; }
   border-color: #29447e #29447e #1a356e;
 }
 
+/* The second-chance warning sits on top of the Terms. */
+.terms-warn {
+  position: absolute;
+  width: min(360px, calc(100% - 32px));
+  padding: 10px;
+  box-sizing: border-box;
+  background: rgba(82, 82, 82, 0.7);
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  font: 11px/1.36 'lucida grande', tahoma, verdana, arial, sans-serif;
+  color: #333;
+  animation: warnin 0.15s ease-out;
+}
+
+.terms-warn[hidden] { display: none; }
+@keyframes warnin { from { transform: scale(0.92); opacity: 0; } }
+.terms-warn-body { margin: 0; padding: 14px 12px; font-size: 13px; }
+
+.terms-warn button {
+  font: bold 11px 'lucida grande', tahoma, verdana, arial, sans-serif;
+  padding: 3px 8px 4px;
+  color: #333;
+  background: #eee;
+  border: 1px solid;
+  border-color: #999 #999 #888;
+  cursor: pointer;
+}
+
+.terms-warn button[data-warn="agree"] {
+  color: #fff;
+  background: #5b74a8;
+  border-color: #29447e #29447e #1a356e;
+}
+
 .terms-window button:focus-visible { outline: 1px dotted #333; outline-offset: 1px; }
