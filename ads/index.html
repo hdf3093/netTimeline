@@ -5,13 +5,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>free games for girls!! — net.timeline</title>
-  <link rel="stylesheet" href="ads.css?v=1">
+  <link rel="stylesheet" href="ads.css?v=3">
 </head>
 <body>
   <header class="site-head">
     <div class="logo">games<span>★</span>4<span>★</span>girls</div>
     <p class="tagline">free online games for girls! dress up, makeover, pets &amp; more</p>
-    <p class="meter">your clicks have made us <b id="earned">$0.00</b></p>
+    <div class="meter">
+      <span class="meter-label">you have made us</span>
+      <b id="earned">$0.00</b>
+      <span class="meter-sub">ads served: <span id="served">0</span></span>
+    </div>
   </header>
 
   <nav class="site-nav">
@@ -21,30 +25,41 @@
   <div class="slot slot--banner" data-slot="banner"></div>
 
   <main class="layout">
+    <aside class="rail">
+      <div class="slot" data-slot="button"></div>
+      <div class="slot" data-slot="button"></div>
+      <div class="slot" data-slot="button"></div>
+      <div class="slot" data-slot="box"></div>
+      <div class="slot" data-slot="button"></div>
+      <div class="slot" data-slot="button"></div>
+    </aside>
+
     <section class="games">
       <h2>Most Popular Games</h2>
       <div class="grid">
-        <button type="button" class="game"><img src="/games/stardoll2.png" alt=""><span>Stardoll</span></button>
-        <button type="button" class="game"><img src="/games/Pixie_Hollow_Online.png" alt=""><span>Pixie Hollow</span></button>
-        <button type="button" class="game"><img src="/games/pop.jpg" alt=""><span>Poptropica</span></button>
-        <button type="button" class="game"><img src="/games/kiss1.png" alt=""><span>Kiss Game</span></button>
+        <div class="game"><img src="/games/stardoll2.png" alt=""><span class="game-name">Stardoll</span></div>
+        <div class="game"><img src="/games/Pixie_Hollow_Online.png" alt=""><span class="game-name">Pixie Hollow</span></div>
+        <div class="game"><img src="/games/pop.jpg" alt=""><span class="game-name">Poptropica</span></div>
+        <div class="game"><img src="/games/kiss1.png" alt=""><span class="game-name">Kiss Game</span></div>
         <div class="slot slot--box" data-slot="box"></div>
-        <button type="button" class="game"><img src="/games/hollow.png" alt=""><span>Fairy Hollow</span></button>
-        <button type="button" class="game"><img src="/games/image_stardoll_2.jpg" alt=""><span>Dress Up Party</span></button>
-        <button type="button" class="game"><img src="/games/fire.jpg" alt=""><span>Fire Island</span></button>
-        <button type="button" class="game"><img src="/games/myth.jpg" alt=""><span>Mythology Island</span></button>
+        <div class="game"><img src="/games/hollow.png" alt=""><span class="game-name">Fairy Hollow</span></div>
+        <div class="game"><img src="/games/image_stardoll_2.jpg" alt=""><span class="game-name">Dress Up Party</span></div>
+        <div class="game"><img src="/games/fire.jpg" alt=""><span class="game-name">Fire Island</span></div>
+        <div class="game"><img src="/games/myth.jpg" alt=""><span class="game-name">Mythology Island</span></div>
       </div>
+      <div class="slot slot--banner" data-slot="banner"></div>
     </section>
 
     <aside class="side">
       <h3>Sponsored</h3>
-      <div class="slot" data-slot="side"></div>
-      <div class="slot" data-slot="side"></div>
-      <div class="slot" data-slot="side"></div>
+      <div class="slot" data-slot="text"></div>
+      <div class="slot" data-slot="text"></div>
+      <div class="slot" data-slot="text"></div>
       <div class="slot slot--box" data-slot="box"></div>
     </aside>
   </main>
 
+  <div class="sticky" id="sticky" hidden></div>
   <div class="popups" id="popups"></div>
 
   <div class="why" id="why" hidden role="dialog" aria-labelledby="whyTitle">
@@ -53,13 +68,6 @@
     <button type="button" id="whyOk">OK</button>
   </div>
 
-  <div class="interstitial" id="interstitial" hidden>
-    <div class="inter-box">
-      <p id="interText"></p>
-      <div id="interAd"></div>
-    </div>
-  </div>
-
-  <script src="ads.js?v=2"></script>
+  <script src="ads.js?v=4"></script>
 </body>
 </html>

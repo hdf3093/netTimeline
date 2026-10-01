@@ -1,7 +1,7 @@
 /* net.timeline — session, tracker & kiosk system
  *
  * Include on every page, in <head>:
- *   <script src="/session/session.js" data-portal="eliza"></script>
+ *   <script src="/session/session.js" data-portal="nostalgia"></script>
  *
  *   data-portal  id of the portal this page is (omit for non-portal pages)
  *   data-page    "gate" on /enter/, "cache" on /cache/
@@ -240,7 +240,7 @@
   }
 
   // Keeps clicks on session UI from reaching portal handlers (p5 mousePressed,
-  // body onclick, eliza's focus grabber) while still being counted.
+  // body onclick) while still being counted.
   function isolate(el) {
     ['mousedown', 'mouseup', 'click', 'pointerdown', 'pointerup', 'touchstart', 'keydown'].forEach(function (type) {
       el.addEventListener(type, function (e) { e.stopPropagation(); });
