@@ -21,7 +21,8 @@
     idleExtendedMs: 5 * 60 * 1000, // ceiling while a camera is on or an embed has focus
     resetMs: 60 * 1000,         // cache page → back to /enter/ for the next visitor
     exhibitionId: 'our-images-under-imperialism-2026',
-    archiveUrl: '/api/archive'
+    archiveUrl: '/api/archive',
+    guestbookUrl: '/api/guestbook'
   };
   try {
     var override = JSON.parse(localStorage.getItem('nt.config') || 'null');
@@ -107,6 +108,12 @@
     pending: function () { return readQueue().length; },
     setCameraActive: function (on) { cameraActive = !!on; lastInput = Date.now(); },
     firstName: function () { return s ? s.name.split(/\s+/)[0] : ''; },
+    // The guestbook calls this once a message is saved.
+    markLeftSomething: function () {
+      if (!s || s.ended_at) return;
+      s.guestbook = true;
+      save();
+    },
     // Where you were just before this page, so a portal can mention it.
     previousPortal: function () {
       if (!s) return null;

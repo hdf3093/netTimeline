@@ -18,7 +18,8 @@
   var TABS = [
     { id: 'board',   title: 'the board',         src: '/board/' },
     { id: 'lib',     title: 'library',           src: '/lib/' },
-    { id: 'archive', title: 'previous visitors', src: '/archive/' }
+    { id: 'archive', title: 'previous visitors', src: '/archive/' },
+    { id: 'guestbook', title: 'guestbook', src: '/guestbook/' }
   ];
 
   var STATE_KEY = 'nt.desktop';

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>guestbook operator</title>
+  <style>
+    body { font: 14px/1.45 -apple-system, 'Segoe UI', sans-serif; margin: 0; padding: 20px; background: #f6f6f6; color: #111; }
+    main { max-width: 760px; margin: 0 auto; }
+    h1 { font-size: 18px; margin: 0 0 12px; }
+    form { display: flex; gap: 8px; margin-bottom: 16px; }
+    input { flex: 1; font: inherit; padding: 6px 8px; }
+    button { font: inherit; padding: 5px 10px; cursor: pointer; }
+    .filters { display: flex; gap: 12px; margin-bottom: 10px; color: #555; }
+    .entry { background: #fff; border: 1px solid #ddd; border-left: 6px solid #3a3; padding: 10px 12px; margin-bottom: 8px; }
+    .entry.held { border-left-color: #e5a100; }
+    .entry.hidden { border-left-color: #999; opacity: 0.7; }
+    .meta { font-size: 12px; color: #666; margin-bottom: 4px; }
+    .msg { white-space: pre-wrap; word-break: break-word; margin-bottom: 8px; }
+    .actions { display: flex; gap: 6px; }
+    #status { color: #555; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>guestbook operator</h1>
+    <form id="login">
+      <input type="password" id="key" placeholder="operator key" autocomplete="current-password" aria-label="operator key">
+      <button type="submit">load entries</button>
+    </form>
+    <div class="filters">
+      <label><input type="checkbox" id="onlyHeld"> held only</label>
+      <span id="status"></span>
+    </div>
+    <div id="entries"></div>
+  </main>
+
+  <script>
+    (function () {
+      var URL_ = '/api/guestbook';
+      var keyInput = document.getElementById('key');
+      var list = document.getElementById('entries');
+      var status = document.getElementById('status');
+      var onlyHeld = document.getElementById('onlyHeld');
+      var entries = [];
+      var key = '';
+
+      function call(method, body) {
+        return fetch(URL_ + (method === 'GET' ? '?all=1' : ''), {
+          method: method,
+          headers: { 'Content-Type': 'application/json', 'x-admin-key': key },
+          body: body ? JSON.stringify(body) : undefined,
+          cache: 'no-store'
+        }).then(function (r) {
+          if (r.status === 403) throw new Error('wrong key');
+          if (!r.ok) throw new Error('error ' + r.status);
+          return r.json();
+        });
+      }
+
+      function render() {
+        list.innerHTML = '';
+        var shown = entries.filter(function (e) { return !onlyHeld.checked || e.status === 'held'; });
+        var held = entries.filter(function (e) { return e.status === 'held'; }).length;
+        status.textContent = entries.length + ' entries · ' + held + ' held';
+        shown.forEach(function (e) {
+          var div = document.createElement('div');
+          div.className = 'entry ' + e.status;
+          var meta = document.createElement('div');
+          meta.className = 'meta';
+          meta.textContent = e.status.toUpperCase() + ' · ' + e.name + ' · ' + new Date(e.created_at).toLocaleString();
+          var msg = document.createElement('div');
+          msg.className = 'msg';
+          msg.textContent = e.message;
+          var actions = document.createElement('div');
+          actions.className = 'actions';
+          [['show', 'show'], ['hide', 'hide'], ['delete', 'delete forever']].forEach(function (a) {
+            if (a[0] === 'show' && e.status === 'visible') return;
+            if (a[0] === 'hide' && e.status === 'hidden') return;
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.textContent = a[1];
+            b.addEventListener('click', function () {
+              if (a[0] === 'delete' && !confirm('Delete this message permanently?')) return;
+              call('POST', { action: a[0], id: e.id }).then(refresh, function (err) { status.textContent = err.message; });
+            });
+            actions.appendChild(b);
+          });
+          div.appendChild(meta);
+          div.appendChild(msg);
+          div.appendChild(actions);
+          list.appendChild(div);
+        });
+      }
+
+      function refresh() {
+        return call('GET').then(function (data) { entries = data.entries; render(); },
+          function (err) { status.textContent = err.message; list.innerHTML = ''; });
+      }
+
+      document.getElementById('login').addEventListener('submit', function (e) {
+        e.preventDefault();
+        key = keyInput.value;
+        refresh();
+      });
+      onlyHeld.addEventListener('change', render);
+    })();
+  </script>
+</body>
+</html>

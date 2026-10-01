@@ -2,3 +2,4 @@
 node_modules/
 .netlify/
 .local-archive.json
+.local-guestbook.json

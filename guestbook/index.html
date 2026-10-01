@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/session/session.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>guestbook — net.timeline</title>
+  <style>
+    html, body { margin: 0; }
+    body {
+      background: #ffd6ef url('/images/sparkleland.gif') repeat;
+      background-size: 215px;
+      font: 14px/1.5 'Comic Sans MS', 'Comic Neue', 'Trebuchet MS', sans-serif;
+      color: #5a0046;
+      padding: 18px 12px 80px;
+    }
+    .page {
+      max-width: 640px;
+      margin: 0 auto;
+      background: #fff7fc;
+      border: 4px ridge #ff8cc8;
+      padding: 14px 18px 20px;
+      box-shadow: 0 0 0 4px #fff, 0 0 18px rgba(255, 79, 174, 0.5);
+    }
+    marquee {
+      font: bold 26px/1.3 'Comic Sans MS', 'Trebuchet MS', sans-serif;
+      color: #ff1493;
+      text-shadow: 2px 2px 0 #ffe3f3, 3px 3px 0 #c4007a;
+    }
+    .center { text-align: center; }
+    .deco { display: flex; justify-content: center; gap: 10px; align-items: center; margin: 4px 0 8px; }
+    .deco img { height: 40px; }
+    hr.rainbow {
+      height: 4px;
+      border: 0;
+      background: linear-gradient(90deg, red, orange, yellow, lime, cyan, blue, violet);
+      margin: 14px 0;
+    }
+    table.sign { width: 100%; border-collapse: collapse; border: 2px dashed #ff8cc8; background: #fff; }
+    table.sign td { padding: 6px 8px; vertical-align: top; }
+    table.sign td:first-child { width: 90px; font-weight: bold; color: #c4007a; }
+    input[type=text], textarea {
+      width: 100%;
+      box-sizing: border-box;
+      font: 14px 'Comic Sans MS', 'Trebuchet MS', sans-serif;
+      color: #333;
+      border: 2px inset #ffc4e6;
+      padding: 4px 6px;
+      background: #fffafd;
+    }
+    textarea { height: 90px; resize: vertical; }
+    .count { font-size: 11px; color: #a0608a; text-align: right; }
+    .disclose { font-size: 12px; color: #a0608a; margin: 6px 0 8px; }
+    .sign-btn {
+      font: bold 15px 'Comic Sans MS', 'Trebuchet MS', sans-serif;
+      color: #fff;
+      background: linear-gradient(#ff7ecb, #ff2f9c);
+      border: 2px outset #ff8cc8;
+      padding: 5px 18px;
+      cursor: pointer;
+    }
+    .sign-btn:disabled { opacity: 0.5; cursor: default; }
+    .note { margin: 8px 0 0; font-weight: bold; }
+    .note.err { color: #c00; }
+    h2 { font-size: 18px; color: #ff1493; margin: 0 0 8px; text-align: center; }
+    .entry { border: 1px solid #ffc4e6; background: #fff; padding: 8px 10px; margin-bottom: 8px; }
+    .entry-head { font-size: 12px; color: #a0608a; margin-bottom: 4px; }
+    .entry-head b { color: #c4007a; font-size: 14px; }
+    .entry-msg { white-space: pre-wrap; word-break: break-word; color: #333; }
+    .entry.is-new { animation: newentry 1.5s ease-out; }
+    @keyframes newentry { from { background: #fff59e; } }
+    .empty { text-align: center; color: #a0608a; }
+    .more { text-align: center; }
+    .more button { font: inherit; color: #c4007a; background: none; border: none; text-decoration: underline; cursor: pointer; }
+    .counter { text-align: center; font-size: 12px; margin-top: 14px; }
+    .counter span { font-family: 'Courier New', monospace; background: #000; color: #0f0; padding: 1px 6px; letter-spacing: 2px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <marquee scrollamount="5">♡ SIGN MY GUESTBOOK!!! ♡</marquee>
+    <div class="deco"><img src="/images/ily.gif" alt=""><img src="/images/LOVE.gif" alt=""><img src="/images/ily.gif" alt=""></div>
+    <p class="center">thank u for visiting net.timeline!! leave a message for whoever comes next ♡</p>
+
+    <hr class="rainbow">
+
+    <form id="form" autocomplete="off">
+      <table class="sign">
+        <tr><td><label for="gbName">name:</label></td><td><input type="text" id="gbName" maxlength="32"></td></tr>
+        <tr><td><label for="gbMsg">message:</label></td><td><textarea id="gbMsg" maxlength="280"></textarea><div class="count" id="count">0 / 280</div></td></tr>
+      </table>
+      <p class="disclose">Your message will be visible to future visitors.</p>
+      <div class="center"><button type="submit" class="sign-btn" id="signBtn">sign the guestbook ♡</button></div>
+      <p class="note center" id="note" role="status"></p>
+    </form>
+
+    <hr class="rainbow">
+
+    <h2>~*~ messages ~*~</h2>
+    <div id="entries"></div>
+    <div class="more" id="more" hidden><button type="button" id="moreBtn">older messages →</button></div>
+    <p class="counter">you are reading message <span id="total">00000</span></p>
+  </div>
+
+  <script>
+    (function () {
+      var NS = window.NetSession;
+      // Inside the desktop's browser, the desktop owns the session.
+      var host = NS;
+      try { if (window.top !== window && window.parent.NetSession) host = window.parent.NetSession; } catch (e) {}
+      var s = NS && NS.get();
+      var url = (NS && NS.config.guestbookUrl) || '/api/guestbook';
+
+      var form = document.getElementById('form');
+      var nameInput = document.getElementById('gbName');
+      var msg = document.getElementById('gbMsg');
+      var count = document.getElementById('count');
+      var note = document.getElementById('note');
+      var btn = document.getElementById('signBtn');
+      var list = document.getElementById('entries');
+      var page = 0;
+
+      function pad(n) { return String(n).padStart(2, '0'); }
+      function when(iso) {
+        var d = new Date(iso);
+        return pad(d.getMonth() + 1) + '.' + pad(d.getDate()) + '.' + String(d.getFullYear()).slice(2) + ' ' +
+          d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      }
+
+      function entryEl(e, isNew) {
+        var div = document.createElement('div');
+        div.className = 'entry' + (isNew ? ' is-new' : '');
+        var head = document.createElement('div');
+        head.className = 'entry-head';
+        var b = document.createElement('b');
+        b.textContent = '♡ ' + e.name;
+        head.appendChild(b);
+        head.appendChild(document.createTextNode('  wrote on ' + when(e.created_at)));
+        var body = document.createElement('div');
+        body.className = 'entry-msg';
+        body.textContent = e.message;
+        div.appendChild(head);
+        div.appendChild(body);
+        return div;
+      }
+
+      function load(n) {
+        fetch(url + '?page=' + n, { cache: 'no-store' })
+          .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+          .then(function (data) {
+            page = data.page;
+            if (n === 0) list.innerHTML = '';
+            if (!data.total) list.innerHTML = '<p class="empty">no messages yet. be the first ♡</p>';
+            data.entries.forEach(function (e) { list.appendChild(entryEl(e)); });
+            document.getElementById('more').hidden = page >= data.pages - 1;
+            document.getElementById('total').textContent = String(data.total).padStart(5, '0');
+          })
+          .catch(function () {
+            if (n === 0) list.innerHTML = '<p class="empty">the guestbook can’t be reached right now.</p>';
+          });
+      }
+
+      document.getElementById('moreBtn').addEventListener('click', function () { load(page + 1); });
+
+      function done(text) {
+        form.querySelectorAll('input, textarea, button').forEach(function (el) { el.disabled = true; });
+        note.className = 'note center';
+        note.textContent = text;
+      }
+
+      // Signing needs a session (it's one message per visit).
+      if (!s || s.ended_at) {
+        done('start a session to sign the guestbook.');
+      } else if (s.guestbook) {
+        done('you already signed the guestbook this visit ♡');
+      } else {
+        nameInput.value = s.name;
+      }
+
+      msg.addEventListener('input', function () { count.textContent = msg.value.length + ' / 280'; });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var name = nameInput.value.trim();
+        var message = msg.value.trim();
+        if (!name || !message) {
+          note.className = 'note center err';
+          note.textContent = !name ? 'please write your name!!' : 'please write a message!!';
+          return;
+        }
+        btn.disabled = true;
+        note.className = 'note center';
+        note.textContent = 'signing…';
+        fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session_id: s.session_id, name: name, message: message })
+        })
+          .then(function (r) { return r.json().then(function (body) { return { status: r.status, body: body }; }); })
+          .then(function (res) {
+            if (res.status === 200 || res.status === 409) {
+              if (host && host.markLeftSomething) host.markLeftSomething();
+              if (res.status === 409) { done('you already signed the guestbook this visit ♡'); return; }
+              if (res.body.status === 'visible' && res.body.entry) {
+                var empty = list.querySelector('.empty');
+                if (empty) empty.remove();
+                list.insertBefore(entryEl(res.body.entry, true), list.firstChild);
+                done('thank u for signing!! ♡ your message will still be here after you leave.');
+              } else {
+                done('thank u for signing!! ♡ your message will appear once it’s been read.');
+              }
+              return;
+            }
+            throw new Error(res.status);
+          })
+          .catch(function () {
+            btn.disabled = false;
+            note.className = 'note center err';
+            note.textContent = 'that didn’t go through. try again in a moment?';
+          });
+      });
+
+      load(0);
+    })();
+  </script>
+</body>
+</html>
