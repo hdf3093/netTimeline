@@ -1,4 +1,5 @@
-/* /enter/ — the 2012 desktop: one icon per portal, the board, and a readme. */
+/* /enter/ — the 2012 desktop: portals as icons, and a browser already open
+ * on the board, the library and the archive of previous visitors. */
 (function () {
   'use strict';
 
@@ -6,53 +7,70 @@
   var s = NS && NS.get();
   if (!s) return; // the gate is showing
 
-  var ITEMS = [
-    { id: 'ascii',      label: 'Mirror',            href: '/asciiHero/',             img: '/images/monitor.gif', portal: true },
-    { id: 'surveilled', label: 'Surveilled',        href: '/surveilled/mirror.html', img: '/images/AngelMirror.gif', portal: true },
-    { id: 'nostalgia',  label: 'Nostalgia, Looped', href: '/clickme/game.html',      img: '/images/1alw.gif', portal: true },
-    { id: 'ads',        label: 'Sponsored',         href: '/ads/',                   img: '/images/125x125_woman.gif', portal: true },
-    { id: 'board',      label: 'the board',         href: '/board/',                 kind: 'folder' },
-    { id: 'readme',     label: 'readme.txt',        kind: 'text' }
+  // Portals, in the order the "next →" doors follow.
+  var PORTALS = [
+    { id: 'nostalgia',  label: 'Nostalgia, Looped', href: '/clickme/game.html',      img: '/images/1alw.gif' },
+    { id: 'ascii',      label: 'Mirror',            href: '/asciiHero/',             img: '/images/monitor.gif' },
+    { id: 'ads',        label: 'Sponsored',         href: '/ads/',                   img: '/images/125x125_woman.gif' },
+    { id: 'surveilled', label: 'Surveilled',        href: '/surveilled/mirror.html', img: '/images/AngelMirror.gif' }
   ];
+
+  var TABS = [
+    { id: 'board',   title: 'the board',         src: '/board/' },
+    { id: 'lib',     title: 'library',           src: '/lib/' },
+    { id: 'archive', title: 'previous visitors', src: '/archive/' }
+  ];
+
+  var STATE_KEY = 'nt.desktop';
+  var state = { open: true, min: false, max: false, tab: 'board' };
+  try { Object.assign(state, JSON.parse(sessionStorage.getItem(STATE_KEY) || '{}')); } catch (e) {}
+  function saveState() { try { sessionStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch (e) {} }
 
   var visited = {};
   s.portals.forEach(function (v) { visited[v.id] = true; });
-  var next = ITEMS.filter(function (i) { return i.portal && !visited[i.id]; })[0];
+  var next = PORTALS.filter(function (p) { return !visited[p.id]; })[0];
 
-  /* ---------- icons ---------- */
+  /* ---------- desktop icons ---------- */
 
   var icons = document.getElementById('icons');
   var selected = null;
 
-  ITEMS.forEach(function (item) {
+  function makeIcon(label, imgSrc, kind, onOpen, extraClass) {
     var b = document.createElement('button');
     b.type = 'button';
-    b.className = 'icon' + (visited[item.id] && item.portal ? ' icon--visited' : '') + (item === next ? ' icon--next' : '');
+    b.className = 'icon' + (extraClass || '');
     b.innerHTML = '<span class="icon-img"></span><span class="icon-label"></span>';
     var img = b.querySelector('.icon-img');
-    if (item.img) {
+    if (imgSrc) {
       var im = document.createElement('img');
-      im.src = item.img;
+      im.src = imgSrc;
       im.alt = '';
       img.appendChild(im);
     } else {
-      img.classList.add('icon-img--' + item.kind);
+      img.classList.add('icon-img--' + kind);
     }
-    b.querySelector('.icon-label').textContent = item.label;
-    if (visited[item.id] && item.portal) b.title = 'visited';
-    if (item === next) {
-      var hint = document.createElement('span');
-      hint.className = 'icon-hint';
-      hint.textContent = s.portals.some(function (v) { return v.id !== 'index'; }) ? 'next' : 'start here';
-      b.appendChild(hint);
-    }
-
+    b.querySelector('.icon-label').textContent = label;
     // 2012 rules: one click selects, a double-click opens.
     b.addEventListener('click', function () { select(b); });
-    b.addEventListener('dblclick', function () { open(item); });
-    b.addEventListener('keydown', function (e) { if (e.key === 'Enter') open(item); });
+    b.addEventListener('dblclick', onOpen);
+    b.addEventListener('keydown', function (e) { if (e.key === 'Enter') onOpen(); });
     icons.appendChild(b);
+    return b;
+  }
+
+  PORTALS.forEach(function (p) {
+    var cls = (visited[p.id] ? ' icon--visited' : '') + (p === next ? ' icon--next' : '');
+    var b = makeIcon(p.label, p.img, null, function () { go(p.href); }, cls);
+    if (visited[p.id]) b.title = 'visited';
+    if (p === next) {
+      var hint = document.createElement('span');
+      hint.className = 'icon-hint';
+      hint.textContent = PORTALS.some(function (x) { return visited[x.id]; }) ? 'next' : 'start here';
+      b.appendChild(hint);
+    }
   });
+
+  makeIcon('Internet', null, 'browser', function () { openBrowser(); });
 
   function select(b) {
     if (selected) selected.classList.remove('is-selected');
@@ -68,50 +86,117 @@
     }
   });
 
-  function open(item) {
+  function go(href) {
     closeStart();
-    if (item.kind === 'text') { openReadme(); return; }
-    location.href = item.href;
+    location.href = href;
   }
 
-  /* ---------- readme window ---------- */
+  /* ---------- the browser window ---------- */
 
-  var readme = document.getElementById('readme');
+  var browser = document.getElementById('browser');
+  var btabs = document.getElementById('btabs');
+  var bview = document.getElementById('bview');
+  var bUrl = document.getElementById('bUrl');
   var tasks = document.getElementById('tasks');
-  var readmeTask = null;
+  var frames = {};
+  var task = null;
 
-  function openReadme() {
-    readme.hidden = false;
-    if (!readmeTask) {
-      readmeTask = document.createElement('button');
-      readmeTask.type = 'button';
-      readmeTask.className = 'task is-active';
-      readmeTask.textContent = 'readme.txt - Notepad';
-      readmeTask.addEventListener('click', function () { readme.hidden = !readme.hidden; });
-      tasks.appendChild(readmeTask);
-    }
+  // Same-origin links that leave the browser (the desktop, the portals) open full-screen.
+  var TOP_PATHS = ['/', '/index.html', '/enter/', '/enter/index.html'].concat(PORTALS.map(function (p) { return p.href; }));
+
+  TABS.forEach(function (t) {
+    var tab = document.createElement('div');
+    tab.className = 'b-tab';
+    tab.innerHTML = '<span class="b-tab-title"></span><span class="b-tab-close" aria-hidden="true">×</span>';
+    tab.querySelector('.b-tab-title').textContent = t.title;
+    tab.addEventListener('click', function () { showTab(t.id); });
+    btabs.appendChild(tab);
+    t.el = tab;
+  });
+
+  function frameFor(id) {
+    if (frames[id]) return frames[id];
+    var t = TABS.filter(function (x) { return x.id === id; })[0];
+    var f = document.createElement('iframe');
+    f.title = t.title;
+    f.src = t.src;
+    f.addEventListener('load', function () { onFrameLoad(t, f); });
+    bview.appendChild(f);
+    frames[id] = f;
+    return f;
   }
 
-  document.getElementById('readmeClose').addEventListener('click', function () {
-    readme.hidden = true;
-    if (readmeTask) { readmeTask.remove(); readmeTask = null; }
+  function onFrameLoad(t, f) {
+    var doc;
+    try { doc = f.contentDocument; } catch (e) { return; }
+    if (!doc) return;
+    doc.querySelectorAll('a[href]').forEach(function (a) {
+      var u;
+      try { u = new URL(a.href); } catch (e) { return; }
+      if (u.origin === location.origin && TOP_PATHS.indexOf(u.pathname) >= 0) a.target = '_top';
+    });
+    // Keep the tab's own name on its home page; show the page title once you browse elsewhere.
+    var path = '';
+    try { path = f.contentWindow.location.pathname; } catch (e) {}
+    var title = path === t.src ? t.title : (doc.title || t.title).replace(/\s*—\s*net\.timeline\s*$/, '').trim();
+    t.el.querySelector('.b-tab-title').textContent = title || t.title;
+    if (state.tab === t.id) updateUrl();
+  }
+
+  function updateUrl() {
+    var f = frames[state.tab];
+    var path = '';
+    try { path = f.contentWindow.location.pathname; } catch (e) {}
+    bUrl.textContent = location.host + (path || '/');
+  }
+
+  function showTab(id) {
+    state.tab = id;
+    saveState();
+    TABS.forEach(function (t) { t.el.classList.toggle('is-active', t.id === id); });
+    var f = frameFor(id);
+    Object.keys(frames).forEach(function (k) { frames[k].hidden = frames[k] !== f; });
+    updateUrl();
+  }
+
+  function render() {
+    browser.hidden = !state.open || state.min;
+    browser.classList.toggle('is-max', state.max);
+    if (state.open && !task) {
+      task = document.createElement('button');
+      task.type = 'button';
+      task.className = 'task';
+      task.textContent = 'net.timeline — Browser';
+      task.addEventListener('click', function () { state.min = !state.min; saveState(); render(); });
+      tasks.appendChild(task);
+    }
+    if (!state.open && task) { task.remove(); task = null; }
+    if (task) task.classList.toggle('is-active', !state.min);
+  }
+
+  function openBrowser(tabId) {
+    state.open = true;
+    state.min = false;
+    saveState();
+    render();
+    showTab(tabId || state.tab);
+  }
+
+  document.getElementById('bMin').addEventListener('click', function () { state.min = true; saveState(); render(); });
+  document.getElementById('bMax').addEventListener('click', function () { state.max = !state.max; saveState(); render(); });
+  document.getElementById('bClose').addEventListener('click', function () { state.open = false; saveState(); render(); });
+  document.getElementById('bBack').addEventListener('click', function () {
+    try { frames[state.tab].contentWindow.history.back(); } catch (e) {}
+  });
+  document.getElementById('bFwd').addEventListener('click', function () {
+    try { frames[state.tab].contentWindow.history.forward(); } catch (e) {}
+  });
+  document.getElementById('bReload').addEventListener('click', function () {
+    try { frames[state.tab].contentWindow.location.reload(); } catch (e) {}
   });
 
-  // Drag the window by its title bar.
-  var bar = readme.querySelector('.win-bar');
-  bar.addEventListener('pointerdown', function (e) {
-    if (e.target.closest('button')) return;
-    var r = readme.getBoundingClientRect();
-    var dx = e.clientX - r.left, dy = e.clientY - r.top;
-    bar.setPointerCapture(e.pointerId);
-    function move(ev) {
-      readme.style.left = Math.max(0, Math.min(innerWidth - 120, ev.clientX - dx)) + 'px';
-      readme.style.top = Math.max(0, Math.min(innerHeight - 80, ev.clientY - dy)) + 'px';
-    }
-    function up() { bar.removeEventListener('pointermove', move); bar.removeEventListener('pointerup', up); }
-    bar.addEventListener('pointermove', move);
-    bar.addEventListener('pointerup', up);
-  });
+  render();
+  if (state.open) showTab(state.tab);
 
   /* ---------- start menu ---------- */
 
@@ -120,13 +205,19 @@
   document.getElementById('startUser').textContent = s.name;
 
   var startItems = document.getElementById('startItems');
-  ITEMS.forEach(function (item) {
+  function startItem(label, onClick) {
     var b = document.createElement('button');
     b.type = 'button';
     b.className = 'startmenu-item';
-    b.textContent = item.label + (visited[item.id] && item.portal ? '  ✓' : '');
-    b.addEventListener('click', function () { open(item); });
+    b.textContent = label;
+    b.addEventListener('click', function () { closeStart(); onClick(); });
     startItems.appendChild(b);
+  }
+  PORTALS.forEach(function (p) {
+    startItem(p.label + (visited[p.id] ? '  ✓' : ''), function () { go(p.href); });
+  });
+  TABS.forEach(function (t) {
+    startItem(t.title, function () { openBrowser(t.id); });
   });
 
   function closeStart() {

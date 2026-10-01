@@ -145,67 +145,142 @@ body {
   box-shadow: 0 1px 3px rgba(120, 0, 70, 0.4);
 }
 
-/* ---------- Notepad ---------- */
+/* ---------- the browser (same 2012 window as Nostalgia, Looped) ---------- */
 
-.win {
+.browser {
   position: absolute;
-  left: max(124px, calc(50% - 280px));
-  top: 8%;
-  width: min(560px, calc(100vw - 140px));
-  background: rgba(214, 228, 245, 0.92);
-  border: 1px solid #6f87a8;
-  border-radius: 7px 7px 4px 4px;
-  box-shadow: 0 8px 28px rgba(60, 0, 40, 0.4);
-  padding: 0 6px 6px;
-  z-index: 10;
-}
-
-.win[hidden] { display: none; }
-
-.win-bar {
+  left: 136px;
+  top: 16px;
+  right: 16px;
+  bottom: 16px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 28px;
-  padding-left: 4px;
-  color: #1c2b3d;
-  cursor: move;
-  user-select: none;
+  flex-direction: column;
+  background: #f2f2f2;
+  border: 1px solid #8c9db5;
+  border-radius: 6px 6px 2px 2px;
+  box-shadow: 0 8px 30px rgba(80, 0, 50, 0.4);
+  overflow: hidden;
+  z-index: 10;
+  font: 12px 'Lucida Grande', 'Segoe UI', Tahoma, sans-serif;
 }
 
-.win-x {
-  width: 40px;
-  height: 18px;
+.browser[hidden] { display: none; }
+.browser.is-max { left: 0; top: 0; right: 0; bottom: 0; border-radius: 0; }
+
+.b-tabstrip {
+  display: flex;
+  align-items: flex-end;
+  height: 32px;
+  padding: 0 0 0 10px;
+  background: linear-gradient(#c9d6ea, #b4c6df);
+  flex: none;
+}
+
+.b-tabs { display: flex; align-items: flex-end; min-width: 0; }
+
+.b-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 1 190px;
+  min-width: 60px;
+  height: 24px;
+  margin-right: -6px;
+  padding: 0 8px 0 12px;
+  box-sizing: border-box;
+  background: linear-gradient(#e4ebf5, #d3ddec);
+  border: 1px solid #8c9db5;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  color: #444;
+  cursor: default;
+}
+
+.b-tab.is-active { position: relative; z-index: 2; height: 27px; background: linear-gradient(#fff, #f2f2f2); color: #222; }
+.b-tab-title { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.b-tab-close { color: #888; font-size: 12px; }
+
+.b-newtab {
+  width: 26px;
+  height: 15px;
+  margin: 0 0 4px 12px;
+  background: linear-gradient(#dfe7f3, #c3d1e6);
+  border: 1px solid #8c9db5;
+  border-radius: 3px;
+  transform: skewX(20deg);
+}
+
+.b-winctl { margin-left: auto; align-self: flex-start; display: flex; }
+
+.b-winctl button {
+  width: 28px;
+  height: 20px;
   padding: 0;
-  font: bold 13px/16px 'Segoe UI', sans-serif;
-  color: #fff;
-  background: linear-gradient(#e9a597, #c8452b 50%, #b5301a);
-  border: 1px solid #6e1e10;
-  border-radius: 0 0 4px 4px;
-  align-self: flex-start;
+  font: 12px/18px 'Segoe UI', sans-serif;
+  color: #33475f;
+  background: linear-gradient(#e3eaf4, #c5d3e6);
+  border: 1px solid #8c9db5;
+  border-top: none;
   cursor: pointer;
 }
 
-.win-menu {
+.b-winctl .b-close { width: 42px; color: #fff; background: linear-gradient(#e9a597, #c8452b 50%, #b5301a); border-color: #6e1e10; border-radius: 0 0 4px 0; }
+
+.b-toolbar {
   display: flex;
-  gap: 14px;
-  padding: 2px 6px;
-  background: #f5f6f7;
-  border: 1px solid #b6bcc6;
-  border-bottom: none;
-  color: #222;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 8px;
+  background: #f2f2f2;
+  border-bottom: 1px solid #bbb;
+  flex: none;
 }
 
-.notepad-text {
-  height: min(52vh, 420px);
-  overflow-y: auto;
-  padding: 6px 8px;
+.b-nav {
+  width: 26px;
+  height: 24px;
+  padding: 0;
+  font-size: 12px;
+  color: #555;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.b-nav:hover { background: #e3e3e3; border-color: #c4c4c4; }
+
+.b-omnibox {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 22px;
+  margin-left: 4px;
+  padding: 0 8px;
   background: #fff;
-  border: 1px solid #b6bcc6;
-  font: 13px/1.45 Consolas, 'Lucida Console', 'Courier New', monospace;
-  color: #111;
-  white-space: pre-wrap;
-  cursor: text;
+  border: 1px solid #b9b9b9;
+  border-radius: 2px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  font-size: 13px;
+  color: #222;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.b-star { color: #999; font-size: 14px; }
+
+.b-view { position: relative; flex: 1; background: #fff; }
+.b-view iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.b-view iframe[hidden] { display: none; }
+
+/* "Internet" icon: a round 2012 browser badge */
+.icon-img--browser {
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse 20% 50% at 50% 50%, transparent 85%, rgba(255, 255, 255, 0.8) 88% 94%, transparent 97%),
+    linear-gradient(transparent 32%, rgba(255, 255, 255, 0.7) 33% 36%, transparent 37% 63%, rgba(255, 255, 255, 0.7) 64% 67%, transparent 68%),
+    radial-gradient(circle at 35% 30%, #bfe0ff, #3d7fe0 55%, #1f4fae);
 }
 
 /* ---------- tray balloon ---------- */
@@ -326,7 +401,7 @@ body {
 .tasks { flex: 1; display: flex; gap: 4px; min-width: 0; }
 
 .task {
-  max-width: 180px;
+  max-width: 220px;
   height: 30px;
   padding: 0 10px;
   font: inherit;
@@ -347,3 +422,5 @@ body {
   font-size: 12px;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6);
 }
+
+.task.is-active { background: rgba(255, 255, 255, 0.35); }

@@ -99,8 +99,32 @@
     reset: reset,
     summary: function () { return summarize(s); },
     pending: function () { return readQueue().length; },
-    setCameraActive: function (on) { cameraActive = !!on; lastInput = Date.now(); }
+    setCameraActive: function (on) { cameraActive = !!on; lastInput = Date.now(); },
+    // Pages shown inside the desktop's browser window report activity here.
+    ping: function (type) {
+      lastInput = Date.now();
+      if (!s || s.ended_at) return;
+      if (type === 'pointerdown') s.clicks++;
+      if (type === 'keydown') s.keys++;
+    }
   };
+
+  /* ---------- framed pages (inside the desktop's browser window) ---------- */
+
+  // The desktop owns the session; a framed page only reports that you're active.
+  if (window.top !== window) {
+    var host = null;
+    try { host = window.parent.NetSession; } catch (e) {}
+    if (host && host.ping) {
+      ['pointerdown', 'keydown', 'wheel', 'scroll', 'pointermove'].forEach(function (type) {
+        document.addEventListener(type, function () { host.ping(type); }, { capture: true, passive: true });
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.ctrlKey && e.altKey && e.shiftKey && e.code === 'KeyR') { e.preventDefault(); host.reset(); }
+      }, true);
+    }
+    return;
+  }
 
   /* ---------- operator shortcut (works with or without a session) ---------- */
 
@@ -153,7 +177,7 @@
   }
 
   function reset() {
-    try { sessionStorage.removeItem(KEY); } catch (e) {}
+    try { sessionStorage.clear(); } catch (e) {}
     s = null;
     location.replace(ENTER_URL);
   }
@@ -258,10 +282,10 @@
 
   // The portals lead into each other, in this order.
   var PATH = [
-    { id: 'ascii', label: 'mirror', href: '/asciiHero/' },
-    { id: 'surveilled', label: 'surveilled', href: '/surveilled/mirror.html' },
     { id: 'nostalgia', label: 'nostalgia', href: '/clickme/game.html' },
-    { id: 'ads', label: 'sponsored', href: '/ads/' }
+    { id: 'ascii', label: 'mirror', href: '/asciiHero/' },
+    { id: 'ads', label: 'sponsored', href: '/ads/' },
+    { id: 'surveilled', label: 'surveilled', href: '/surveilled/mirror.html' }
   ];
 
   // The next portal you haven't been to, looking forward from this one.
