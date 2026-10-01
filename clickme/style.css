@@ -18,6 +18,7 @@ body {
 /* ---------- 2012 Chrome window ---------- */
 
 .browser {
+  position: relative;
   background: #f2f2f2;
   border: 1px solid #8c9db5;
   border-radius: 5px 5px 2px 2px;
@@ -29,37 +30,68 @@ body {
   display: flex;
   align-items: flex-end;
   height: 30px;
-  padding: 0 10px;
+  padding: 0 16px 0 10px;
+  overflow: hidden;
   background: linear-gradient(#c9d6ea, #b4c6df);
 }
 
+.tabs {
+  display: flex;
+  align-items: flex-end;
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
+/* Tabs squeeze narrower as they pile up, like 2012. */
 .tab {
   position: relative;
   display: flex;
   align-items: center;
   gap: 6px;
-  width: 210px;
-  height: 25px;
-  padding: 0 10px 0 14px;
+  flex: 0 1 210px;
+  min-width: 44px;
+  height: 24px;
+  margin-right: -6px;
+  padding: 0 6px 0 12px;
   box-sizing: border-box;
-  background: linear-gradient(#fff, #f2f2f2);
+  background: linear-gradient(#e4ebf5, #d3ddec);
   border: 1px solid #8c9db5;
   border-bottom: none;
   border-radius: 6px 6px 0 0;
-  transform: perspective(40px) rotateX(4deg);
-  transform-origin: bottom;
+  cursor: default;
+  color: #444;
+}
+
+.tab--active {
+  z-index: 2;
+  height: 26px;
+  background: linear-gradient(#fff, #f2f2f2);
+  color: #222;
 }
 
 .tab-title {
   flex: 1;
+  min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: #222;
-  transform: perspective(40px) rotateX(-4deg);
 }
 
-.tab-close { color: #777; font-size: 13px; transform: perspective(40px) rotateX(-4deg); }
+.tab-close {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  line-height: 14px;
+  font-size: 13px;
+  color: #777;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.tab-close:hover { background: #c9533f; color: #fff; }
 
 .newtab {
   width: 26px;
@@ -81,11 +113,11 @@ body {
   flex: none;
 }
 
-.spinner[hidden] { display: none; }
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .toolbar {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -171,3 +203,49 @@ button.nav-btn:not(:disabled):hover { background: #e3e3e3; border-color: #c4c4c4
 
 .sound-btn:hover { background: linear-gradient(#fff, #ededed); border-color: #888; }
 .sound-btn[aria-pressed="false"] { color: #999; }
+
+/* ---------- "didn't shut down correctly" bubble ---------- */
+
+.crash {
+  position: absolute;
+  right: 10px;
+  top: 72px;
+  z-index: 5;
+  width: 290px;
+  padding: 12px 14px;
+  background: #fff;
+  border: 1px solid #999;
+  border-radius: 3px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  font-size: 12px;
+  line-height: 1.4;
+  color: #222;
+}
+
+.crash[hidden] { display: none; }
+
+.crash::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  right: 22px;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-left: 1px solid #999;
+  border-top: 1px solid #999;
+  transform: rotate(45deg);
+}
+
+.crash p { margin: 0 0 10px; }
+
+.crash button {
+  float: right;
+  font: 12px 'Lucida Grande', 'Segoe UI', Tahoma, sans-serif;
+  padding: 4px 14px;
+  color: #fff;
+  background: linear-gradient(#5d9bf7, #3b7bea);
+  border: 1px solid #2f5bb7;
+  border-radius: 2px;
+  cursor: pointer;
+}

@@ -7,16 +7,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nostalgia, Looped — net.timeline</title>
-    <link rel="stylesheet" type="text/css" href="style.css?v=3">
+    <link rel="stylesheet" type="text/css" href="style.css?v=4">
   </head>
   <body>
     <div class="browser">
       <div class="tabstrip">
-        <div class="tab">
-          <span class="spinner" id="spinner" hidden></span>
-          <span class="tab-title" id="tabTitle"></span>
-          <span class="tab-close" aria-hidden="true">×</span>
-        </div>
+        <div class="tabs" id="tabs"></div>
         <div class="newtab" aria-hidden="true"></div>
       </div>
       <div class="toolbar">
@@ -25,6 +21,10 @@
         <span class="nav-btn nav-btn--off" aria-hidden="true">↻</span>
         <div class="omnibox"><span id="omnibox"></span><span class="star" aria-hidden="true">☆</span></div>
       </div>
+      <div class="crash" id="crash" hidden>
+        <p>Chrome didn't shut down correctly. To reopen the pages that were open, click Restore.</p>
+        <button type="button" id="restoreBtn">Restore</button>
+      </div>
       <div class="viewport" id="viewport">
         <div class="bubble" id="bubble" hidden></div>
       </div>
@@ -32,6 +32,6 @@
 
     <button type="button" class="sound-btn" id="soundBtn" aria-pressed="true">♪ sound on</button>
 
-    <script src="sketch.js?v=5"></script>
+    <script src="sketch.js?v=9"></script>
   </body>
 </html>
