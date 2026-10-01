@@ -6,20 +6,6 @@ const VW = 320, VH = 240;      // capture size (also the face tracker's coordina
 const BUF = 48;                // frames kept for the delay ripple (~1.6s at 30fps)
 const STEP = 4;                // extra frames of delay per ring away from the centre
 
-const TAGS = [
-  'subject_01',
-  '98% girl',
-  'mood: nostalgic',
-  'tagged in 212 photos',
-  'age: 12? 24? 31?',
-  'searching for matches…',
-  'resemblance: 64%',
-  'last seen: just now',
-  'likely to return',
-  'smile detected',
-  'is this you?',
-  'confidence: high'
-];
 
 let video = null, videoReady = false, cameraDenied = false;
 let tracker = null;
@@ -27,7 +13,8 @@ let watching = false;
 let frames = [], head = 0, filled = 0;
 let tile = 120, cols = 0, rows = 0, panel = {};
 let concern = null;
-let tags = [], nextTagAt = 0;
+let extracted = 0;
+let profile = null;
 let sndCode, sndCamera, sndNoise;
 
 function preload() {
@@ -100,6 +87,7 @@ function stopWatching() {
   }
   videoReady = false;
   filled = 0;
+  profile = null;
   sndNoise.stop();
   document.getElementById('hud').hidden = true;
   resetPopups();
@@ -182,7 +170,8 @@ function drawFace() {
   strokeWeight(2);
   const pad = 14;
   corners(minX - pad, minY - pad * 2, maxX + pad, maxY + pad);
-  drawTags(maxX + pad + 8, minY - pad * 2);
+  extracted += pos.length * 2;
+  drawReadout(maxX + pad + 10, minY - pad * 2, pos);
 }
 
 function corners(x1, y1, x2, y2) {
@@ -193,26 +182,76 @@ function corners(x1, y1, x2, y2) {
   line(x2, y2, x2 - l, y2); line(x2, y2, x2, y2 - l);
 }
 
-function drawTags(x, y) {
-  if (millis() > nextTagAt) {
-    const pool = TAGS.filter((t) => !tags.includes(t));
-    tags.push(random(pool));
-    if (concern && !tags.includes(concern) && Math.random() < 0.35) tags.push(concern);
-    while (tags.length > 5) tags.shift();
-    nextTagAt = millis() + 1400;
+// Everything here is computed from the current frame and discarded with it.
+function readout(pos) {
+  const d = (a, b) => Math.hypot(pos[a][0] - pos[b][0], pos[a][1] - pos[b][1]);
+  const faceW = d(1, 13);
+  const tilt = Math.atan2(pos[32][1] - pos[27][1], pos[32][0] - pos[27][0]) * 180 / Math.PI;
+  const mouthW = d(44, 50), mouthH = d(47, 53);
+  const expression = mouthH / mouthW > 0.38 ? 'speaking' : mouthW / faceW > 0.42 ? 'smiling' : 'neutral';
+
+  // A "faceprint" from the landmark geometry: it changes as you move.
+  let h = 2166136261;
+  for (let i = 0; i < pos.length; i += 3) {
+    h ^= Math.round(((pos[i][0] - pos[0][0]) / faceW) * 40) & 0xff;
+    h = Math.imul(h, 16777619);
+    h ^= Math.round(((pos[i][1] - pos[0][1]) / faceW) * 40) & 0xff;
+    h = Math.imul(h, 16777619);
   }
+  const hex = (h >>> 0).toString(16).padStart(8, '0') + Math.round(faceW * 97).toString(16).padStart(4, '0');
+
+  if (!profile) {
+    profile = {
+      age: random(['14–17', '18–24', '19–24', '25–34']),
+      segment: random(['beauty / nostalgia', 'fashion / teen', 'wellness / self-image', 'gaming / casual'])
+    };
+  }
+
+  return [
+    ['faceprint', hex.match(/.{4}/g).join('·')],
+    ['landmarks', pos.length + ' / 71 tracked'],
+    ['head tilt', (tilt >= 0 ? '+' : '−') + Math.abs(tilt).toFixed(1) + '°'],
+    ['distance', '~' + Math.round(4200 / faceW) + ' cm'],
+    ['expression', expression],
+    ['age_est', profile.age + ' (' + (0.55 + noise(millis() / 3000) * 0.4).toFixed(2) + ')'],
+    ['ad_segment', profile.segment],
+    ['est_value', '$' + (0.003 + noise(millis() / 5000 + 9) * 0.003).toFixed(4) + ' / impression'],
+    ['consent', 'assumed'],
+    ['concern', concern || '—']
+  ];
+}
+
+function drawReadout(x, y, pos) {
+  const rows = readout(pos);
+  const lh = 17, w = 290;
+  const x0 = Math.min(x, width - w - 12);
+  const h = lh * (rows.length + 3) + 10;
+  const y0 = constrain(y, 12, height - h - 60);
+
+  noStroke();
+  fill(0, 0, 0, 200);
+  rect(x0, y0, w, h);
+  fill(255, 0, 0);
+  rect(x0, y0, w, lh + 4);
+
   textFont('Courier New');
   textStyle(BOLD);
   textSize(12);
   textAlign(LEFT, TOP);
-  tags.forEach((t, n) => {
-    const ty = y + n * 20;
-    noStroke();
-    fill(255, 0, 0);
-    rect(x, ty, textWidth(t) + 10, 16);
+  fill(255);
+  text('SUBJECT_01', x0 + 8, y0 + 4);
+
+  rows.forEach(([k, v], n) => {
+    const ty = y0 + lh * (n + 1) + 8;
+    fill(150);
+    text(k, x0 + 8, ty);
     fill(255);
-    text(t, x + 5, ty + 2);
+    text(v, x0 + 112, ty);
   });
+
+  fill(255, 80, 80);
+  text('points extracted', x0 + 8, y0 + h - lh - 4);
+  text(extracted.toLocaleString(), x0 + 160, y0 + h - lh - 4);
 }
 
 function drawIdle() {
@@ -249,20 +288,22 @@ const STEPS = [
   {
     title: 'net.timeline',
     text: 'what bothers you more?',
+    note: 'we value your privacy.',
     buttons: [
-      { label: 'the symbiosis of your body and machine', concern: 'concern: the machine' },
-      { label: 'the one above you, surveilling, learning, orchestrating', concern: 'concern: the watcher' }
+      { label: 'the symbiosis of your body and machine', concern: 'the machine', primary: true },
+      { label: 'the one above you, surveilling, learning, orchestrating', concern: 'the watcher' }
     ]
   },
   {
     title: 'net.timeline',
     text: 'are you sure they are different?',
-    buttons: [{ label: 'no' }, { label: 'yes' }]
+    buttons: [{ label: 'no', primary: true }, { label: 'yes' }]
   },
   {
     title: 'camera',
     text: 'can you see me?',
-    buttons: [{ label: 'hello', start: true }]
+    note: 'net.timeline would like to use your camera. you will be seen, you will not be kept.',
+    buttons: [{ label: 'hello', start: true, primary: true }]
   }
 ];
 
@@ -284,24 +325,27 @@ function showStep(n) {
   step = n;
   const s = STEPS[n];
   const box = document.getElementById('popups');
-  const win = document.createElement('div');
-  win.className = 'popup';
-  win.style.setProperty('--n', n);
-  win.innerHTML =
-    '<div class="popup-titlebar"><span></span><i aria-hidden="true">×</i></div>' +
-    '<div class="popup-body"><span class="popup-icon" aria-hidden="true">?</span><p></p></div>' +
-    '<div class="popup-buttons"></div>';
-  win.querySelector('.popup-titlebar span').textContent = s.title;
-  win.querySelector('.popup-body p').textContent = s.text;
-  const row = win.querySelector('.popup-buttons');
+  box.innerHTML = '';
+  const card = document.createElement('div');
+  card.className = 'consent';
+  card.innerHTML =
+    '<p class="consent-step"></p>' +
+    '<p class="consent-text"></p>' +
+    '<div class="consent-buttons"></div>' +
+    '<p class="consent-note"></p>';
+  card.querySelector('.consent-step').textContent = (n + 1) + ' of ' + STEPS.length;
+  card.querySelector('.consent-text').textContent = s.text;
+  card.querySelector('.consent-note').textContent = s.note || '';
+  const row = card.querySelector('.consent-buttons');
   s.buttons.forEach((b) => {
     const btn = document.createElement('button');
     btn.type = 'button';
+    btn.className = b.primary ? 'consent-btn consent-btn--primary' : 'consent-btn';
     btn.textContent = b.label;
-    btn.addEventListener('click', () => choose(b, win));
+    btn.addEventListener('click', () => choose(b, card));
     row.appendChild(btn);
   });
-  box.appendChild(win);
+  box.appendChild(card);
   row.querySelector('button').focus({ preventScroll: true });
 }
 
@@ -311,7 +355,6 @@ function choose(b, win) {
     if (!sndCode.isPlaying()) sndCode.play();
   }
   if (b.concern) concern = b.concern;
-  win.classList.add('answered');
   win.querySelectorAll('button').forEach((x) => { x.disabled = true; });
   if (b.start) startWatching();
   else if (step + 1 < STEPS.length) showStep(step + 1);
