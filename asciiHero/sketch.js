@@ -68,6 +68,7 @@ function enterPortal() {
   inPortal = true;
   cameraDenied = false;
   ui.start.hidden = true;
+  document.body.classList.remove('is-idle');
   ui.toolbar.hidden = false;
   if (window.NetSession) NetSession.setCameraActive(true);
 
@@ -84,6 +85,7 @@ function exitPortal() {
   inPortal = false;
   ui.status.textContent = '';
   ui.start.hidden = false;
+  document.body.classList.add('is-idle');
   ui.toolbar.hidden = true;
   if (window.NetSession) NetSession.setCameraActive(false);
   if (video) {

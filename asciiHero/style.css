@@ -30,40 +30,41 @@ body[data-mode="paper"]           { background: #fafafa; }
   text-align: center;
   pointer-events: none;
   z-index: 10;
+  background: radial-gradient(ellipse 45% 35% at 50% 50%, rgba(0, 0, 0, 0.85), transparent);
 }
 
 .start[hidden] { display: none; }
 .start > * { pointer-events: auto; }
 
-.start-kicker {
-  margin: 0;
-  color: #ffb3f0;
-  letter-spacing: 0.3em;
-  font-size: 13px;
-}
-
 .start-title {
-  margin: 8px 0 12px;
-  font-size: clamp(40px, 8vw, 110px);
-  line-height: 1;
+  margin: 0 0 14px;
+  font: normal clamp(28px, 4vw, 52px)/1.1 'Courier New', Courier, monospace;
   color: #fff;
-  text-shadow: 0 0 12px #ff5fd2, 0 0 30px #ff5fd2, 0 0 60px #b400ff;
-  animation: pulse 2.4s ease-in-out infinite alternate;
-}
-
-@keyframes pulse {
-  from { opacity: 0.85; }
-  to { opacity: 1; text-shadow: 0 0 16px #ff5fd2, 0 0 44px #ff5fd2, 0 0 90px #b400ff; }
+  letter-spacing: -0.01em;
 }
 
 .start-sub {
-  margin: 0 0 28px;
-  font-size: 14px;
+  max-width: 34em;
+  margin: 0 0 26px;
+  font-size: 13px;
   line-height: 1.6;
-  color: #ffd6f6;
-  background: rgba(0, 0, 0, 0.55);
-  padding: 4px 10px;
+  color: rgba(255, 255, 255, 0.6);
 }
+
+.start-btn {
+  font: 16px 'Courier New', Courier, monospace;
+  color: rgba(255, 255, 255, 0.75);
+  background: none;
+  border: none;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.start-btn:hover, .start-btn:focus-visible { color: #fff; outline: none; text-shadow: 0 0 10px #ff8ce6; }
+
+/* Before you look, the static stays faint. */
+body.is-idle canvas { opacity: 0.28; transition: opacity 0.6s; }
+body:not(.is-idle) canvas { transition: opacity 0.6s; }
 
 /* ---------- buttons ---------- */
 
@@ -150,3 +151,5 @@ body[data-mode="paper"] .portal-caption { color: #000; background: rgba(255, 255
   pointer-events: none;
   z-index: 5;
 }
+
+body.is-idle .portal-caption { display: none; }
