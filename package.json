@@ -4,6 +4,6 @@
   "type": "module",
   "description": "net.timeline — static site with a Netlify Function for the visitor archive",
   "dependencies": {
-    "@netlify/blobs": "^11.1.2"
+    "@netlify/blobs": "11.1.0"
   }
 }
