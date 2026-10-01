@@ -71,7 +71,7 @@ function setup() {
 function windowResized() { fit(); }
 
 function fit() {
-  const s = Math.floor(Math.min(windowWidth - 40, windowHeight - 150, 900));
+  const s = Math.floor(Math.min(windowWidth - 40, windowHeight - 200, 900));
   k = s / SIZE;
   resizeCanvas(s, s);
   // The window is exactly as wide as the page, so extra tabs squeeze instead of widening it.

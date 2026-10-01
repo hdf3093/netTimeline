@@ -21,15 +21,12 @@
   padding: 6px 9px;
   cursor: pointer;
   text-decoration: none;
-  opacity: 0.55;
-  transition: opacity 0.15s;
 }
 
-.nt-chrome-back { opacity: 0.8; }
-.nt-chrome-next { opacity: 0.95; font-weight: bold; }
+.nt-chrome-next { font-weight: bold; }
 
 .nt-chrome-btn:hover,
-.nt-chrome-btn:focus-visible { opacity: 1; }
+.nt-chrome-btn:focus-visible { background: #e4e0d8; }
 
 .nt-chrome-btn:active:not(:disabled) {
   border-color: #404040 #fff #fff #404040;
