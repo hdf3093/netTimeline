@@ -7,35 +7,31 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nostalgia, Looped — net.timeline</title>
-    <link rel="stylesheet" type="text/css" href="style.css?v=2">
+    <link rel="stylesheet" type="text/css" href="style.css?v=3">
   </head>
   <body>
-    <header class="banner">
-      <h1>Nostalgia, Looped</h1>
-      <p id="count"></p>
-    </header>
-
-    <div class="window" id="window">
-      <div class="win-titlebar">
-        <span class="win-title" id="winTitle"></span>
-        <span class="win-controls" aria-hidden="true"><i>_</i><i>□</i><i>×</i></span>
+    <div class="browser">
+      <div class="tabstrip">
+        <div class="tab">
+          <span class="spinner" id="spinner" hidden></span>
+          <span class="tab-title" id="tabTitle"></span>
+          <span class="tab-close" aria-hidden="true">×</span>
+        </div>
+        <div class="newtab" aria-hidden="true"></div>
       </div>
-      <div class="win-address">
-        <span class="win-address-label">Address</span>
-        <span class="win-url" id="winUrl"></span>
+      <div class="toolbar">
+        <button type="button" class="nav-btn" id="backBtn" aria-label="Back">◀</button>
+        <span class="nav-btn nav-btn--off" aria-hidden="true">▶</span>
+        <span class="nav-btn nav-btn--off" aria-hidden="true">↻</span>
+        <div class="omnibox"><span id="omnibox"></span><span class="star" aria-hidden="true">☆</span></div>
       </div>
-      <div class="win-viewport" id="viewport"></div>
-      <div class="win-status" id="winStatus">click the pink dots ♡</div>
-    </div>
-
-    <div class="done" id="done" hidden>
-      <div class="done-box">
-        <p class="done-title">you found every memory ♡</p>
-        <p>they loop anyway.</p>
-        <button type="button" id="again">[ again ]</button>
+      <div class="viewport" id="viewport">
+        <div class="bubble" id="bubble" hidden></div>
       </div>
     </div>
 
-    <script src="sketch.js?v=3"></script>
+    <button type="button" class="sound-btn" id="soundBtn" aria-pressed="true">♪ sound on</button>
+
+    <script src="sketch.js?v=5"></script>
   </body>
 </html>
