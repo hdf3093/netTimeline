@@ -14,14 +14,14 @@ const COLORS = ['pink', 'terminal', 'rainbow', 'paper'];
 const SPARKLES = '✦✧⋆*+·';
 
 const STATUS = [
-  'converting you to text… 72%',
-  'rendering subject as {n} characters',
+  'reading your face… 72%',
+  'you are {n} characters',
+  'you are {rows} lines tall',
   'brightness → meaning',
   'resolution lowered for your comfort',
-  'you are {rows} lines tall',
+  'do you look like you?',
   'this is what a camera sees',
-  'compressing face… done',
-  'nothing is saved. you are only here now.'
+  'you will be seen, you will not be kept.'
 ];
 
 let video = null;
