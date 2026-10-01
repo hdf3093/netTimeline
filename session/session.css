@@ -26,6 +26,7 @@
 }
 
 .nt-chrome-back { opacity: 0.8; }
+.nt-chrome-next { opacity: 0.95; font-weight: bold; }
 
 .nt-chrome-btn:hover,
 .nt-chrome-btn:focus-visible { opacity: 1; }

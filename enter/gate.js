@@ -6,10 +6,7 @@
   if (!NS) return;
   var s = NS.get();
 
-  if (s) {
-    showSessionBox(s);
-    return;
-  }
+  if (s) return; // the desktop takes over (desktop.js)
 
   var TERMS = [
     ['h', 'TERMS OF EXISTENCE'],
@@ -185,15 +182,4 @@
       location.reload();
     }
   }, 1000);
-
-  function showSessionBox(session) {
-    var box = document.getElementById('sessionBox');
-    if (!box) return;
-    var started = new Date(session.started_at);
-    document.getElementById('sessionName').textContent = session.name;
-    document.getElementById('sessionMeta').textContent =
-      'session_' + session.session_id + ' · opened ' +
-      started.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-    box.hidden = false;
-  }
 })();

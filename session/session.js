@@ -256,6 +256,26 @@
     });
   }
 
+  // The portals lead into each other, in this order.
+  var PATH = [
+    { id: 'ascii', label: 'mirror', href: '/asciiHero/' },
+    { id: 'surveilled', label: 'surveilled', href: '/surveilled/mirror.html' },
+    { id: 'nostalgia', label: 'nostalgia', href: '/clickme/game.html' },
+    { id: 'ads', label: 'sponsored', href: '/ads/' }
+  ];
+
+  // The next portal you haven't been to, looking forward from this one.
+  function nextPortal() {
+    var seen = {};
+    s.portals.forEach(function (v) { seen[v.id] = true; });
+    var here = PATH.findIndex(function (p) { return p.id === portalId; });
+    for (var i = 1; i <= PATH.length; i++) {
+      var p = PATH[(here + i) % PATH.length];
+      if (!seen[p.id]) return p;
+    }
+    return null;
+  }
+
   function installChrome() {
     var bar = document.createElement('div');
     bar.className = 'nt-chrome';
@@ -263,8 +283,22 @@
       var back = document.createElement('a');
       back.className = 'nt-chrome-btn nt-chrome-back';
       back.href = ENTER_URL;
-      back.textContent = '← portals';
+      back.textContent = '← desktop';
       bar.appendChild(back);
+    }
+    if (PATH.some(function (p) { return p.id === portalId; })) {
+      var nxt = nextPortal();
+      var door = document.createElement(nxt ? 'a' : 'button');
+      door.className = 'nt-chrome-btn nt-chrome-next';
+      if (nxt) {
+        door.href = nxt.href;
+        door.textContent = 'next: ' + nxt.label + ' →';
+      } else {
+        door.type = 'button';
+        door.textContent = 'that\u2019s everything → end session';
+        door.addEventListener('click', openDialog);
+      }
+      bar.appendChild(door);
     }
     var btn = document.createElement('button');
     btn.type = 'button';

@@ -1,6 +1,17 @@
-/* Gate shown on /enter/ before a session exists. */
+/* Gate shown on /enter/ before a session exists, over the desktop wallpaper. */
 
-html.nt-gate .Main { display: none; }
+:root {
+  --text-color-1: #800000;
+  --text-color-2: #880000;
+  --text-color-4: #1400EE;
+  --text-color-5: #8d765a;
+  --field-color-1: #FFCCAA;
+  --field-color-2: #F0E0D6;
+  --border-color-1: #D9BFB7;
+  --bg-color-2: #FFFFED;
+}
+
+html.nt-gate .desktop > *, html.nt-gate .taskbar { display: none; }
 html:not(.nt-gate) .gate { display: none; }
 
 .gate {
@@ -165,9 +176,3 @@ html:not(.nt-gate) .gate { display: none; }
 }
 
 .terms-window button:focus { outline: 1px dotted #000; outline-offset: -4px; }
-
-/* ---------- session box on the board ---------- */
-
-.Box--session .Box-body p { margin: 0 0 0.5rem; }
-.Box--session .session-welcome { font-size: 1.15rem; }
-.Box--session .session-meta { font-family: 'Courier New', Courier, monospace; color: var(--text-color-5); }
