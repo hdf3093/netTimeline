@@ -1,6 +1,6 @@
 # net.timeline
 
-→ [net-timeline.netlify.app]([https://net-timeline.netlify.app/enter/])
+→ [net-timeline.netlify.app](https://net-timeline.netlify.app/enter/)
 
 ![the desktop, with the board open in the browser](docs/preview/02-desktop.jpg)
 
