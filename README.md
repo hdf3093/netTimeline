@@ -1,10 +1,5 @@
 # net.timeline
 
-*this website would like to remember you.*
-
-
-net.timeline is a website about growing up as a girl online, and about the internet as a living archive of every self you made there. it is a collection of portals: Stardoll and Pixie Hollow, a webcam that turns you into text, ads that already know you, a camera that reads you back. every visit is remembered, and every time it's exhibited the archive grows.
-
 → [net-timeline.netlify.app]([https://net-timeline.netlify.app/enter/])
 
 ![the desktop, with the board open in the browser](docs/preview/02-desktop.jpg)
@@ -16,8 +11,6 @@ net.timeline is a website about growing up as a girl online, and about the inter
 ![welcome to net.timeline](docs/preview/01-gate.jpg)
 
 you give your name and agree to the **Terms of Existence**, which you will not read!
-
-then you log in to a 2012 desktop. the browser is already open on the board, the library, the guestbook, and everyone who came before you. the portals sit on the desktop like icons. each one leads into the next and they're yours to explore
 
 ---
 
